@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
 
-Documentation
+[Documentation](https://dgl-graphloader.readthedocs.io/en/latest/index.html)
 
 DGL GraphLoader is a light weight library helping load dataset into DGL Graph. It provides a banch of APIs to load graph structures, vertics features, edge features, and training/validation/testing ground truth labels into a DGL Graph. The package is implemented on the top of [Deep Graph Library](https://www.dgl.ai/).
 
