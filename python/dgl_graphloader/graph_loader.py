@@ -63,6 +63,7 @@ class GraphLoader(object):
     be added twice. **But if one edge appears in both EdgeFeatureLoader and
     EdgeLabelLoader, it will only be added once.
 
+    **For each edge type, there should not exit duplicated edges**
 
     Example:
 
@@ -519,7 +520,7 @@ class GraphLoader(object):
         assert len(train_edge_labels) >= len(valid_edge_labels), \
             'The training set should cover all kinds of edge types ' \
             'where the validation set is avaliable.'
-        assert len(train_edge_labels) == len(test_edge_labels), \
+        assert len(train_edge_labels) >= len(test_edge_labels), \
             'The training set should cover the same edge types as the test set.'
 
         for edge_type, train_val in train_edge_labels.items():
@@ -528,8 +529,10 @@ class GraphLoader(object):
                 valid_snids, valid_dnids, valid_labels = valid_edge_labels[edge_type]
             else:
                 valid_snids, valid_dnids, valid_labels = None, None, None
-            assert edge_type in test_edge_labels
-            test_snids, test_dnids, test_labels = test_edge_labels[edge_type]
+            if edge_type in test_edge_labels:
+                test_snids, test_dnids, test_labels = test_edge_labels[edge_type]
+            else:
+                test_snids, test_dnids, test_labels = None, None, None
 
             u, v, eids = g.edge_ids(train_snids,
                                     train_dnids,
@@ -552,7 +555,7 @@ class GraphLoader(object):
             train_mask = th.full((g.num_edges(edge_type),), False, dtype=th.bool)
             train_mask[eids] = True
 
-            valid_mask = None
+            valid_mask = th.full((g.num_edges(edge_type),), False, dtype=th.bool)
             if valid_snids is not None:
                 u, v, eids = g.edge_ids(valid_snids,
                                         valid_dnids,
@@ -569,26 +572,27 @@ class GraphLoader(object):
                         'We must have train_labels first then valid_labels'
                     labels[eids] = th.tensor(valid_labels)
                 # handle valid mask
-                valid_mask = th.full((g.num_edges(edge_type),), False, dtype=th.bool)
                 valid_mask[eids] = True
 
-            u, v, eids = g.edge_ids(test_snids,
-                                    test_dnids,
-                                    return_uv=True,
-                                    etype=edge_type)
-            # handle test label
-            if test_labels is not None:
+            test_mask = th.full((g.num_edges(edge_type),), False, dtype=th.bool)
+            if test_snids is not None:
+                u, v, eids = g.edge_ids(test_snids,
+                                        test_dnids,
+                                        return_uv=True,
+                                        etype=edge_type)
+
                 assert test_snids.shape[0] == eids.shape[0], \
                     'Under edge type {}, There exists multiple edges' \
                     'between some (src, dst) pair in the testing set.' \
                     'This is misleading and will not be supported'.format(
                         edge_type if edge_type is not None else "")
-                assert labels is not None, \
-                    'We must have train_labels first then test_lavbels'
-                labels[eids] = th.tensor(test_labels)
-            # handle test mask
-            test_mask = th.full((g.num_edges(edge_type),), False, dtype=th.bool)
-            test_mask[eids] = True
+                # handle test label
+                if test_labels is not None:
+                    assert labels is not None, \
+                        'We must have train_labels first then test_lavbels'
+                    labels[eids] = th.tensor(test_labels)
+                # handle test mask
+                test_mask[eids] = True
 
             # add label and train/valid/test masks into g
             if edge_type is None:
