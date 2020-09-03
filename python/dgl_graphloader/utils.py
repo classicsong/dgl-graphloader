@@ -5,6 +5,7 @@ import os
 import sys
 import errno
 from multiprocessing import Manager,Process
+import pickle
 
 import numpy as np
 import scipy.sparse as sp
