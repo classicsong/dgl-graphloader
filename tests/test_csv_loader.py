@@ -1262,6 +1262,115 @@ def test_edge_label_process():
         assert np.array_equal(vl_truth, valid_labels)
         assert np.array_equal(tl_truth, test_labels)
 
+def test_relation_edge_label_process():
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        create_graph_edges(Path(tmpdirname), 'edge_label.csv')
+
+        label_loader = dgl_graphloader.EdgeLabelLoader(os.path.join(tmpdirname,
+                                                         'edge_label.csv'))
+        # only existence of the edge
+        label_loader.addRelationalTrainSet([0,1,2])
+        node_dicts = {}
+        result = label_loader.process(node_dicts)
+        assert len(result) == 1
+        train_snids, train_dnids, train_labels, \
+            valid_snids, valid_dnids, valid_labels, \
+            test_snids, test_dnids, test_labels = result[('node','A','node')]
+        assert np.array_equal(np.array([0,1,2,3,3]), train_snids)
+        assert np.array_equal(np.array([1,0,0,2,3]), train_dnids)
+        assert valid_snids is None
+        assert valid_dnids is None
+        assert test_snids is None
+        assert test_dnids is None
+        assert train_labels is None
+        assert valid_labels is None
+        assert test_labels is None
+        label_loader.addRelationalValidSet([0,1,3],rows=[0,3])
+        label_loader.addRelationalTestSet([0,1,3],rows=[1,2,4])
+        result = label_loader.process(node_dicts)
+        assert len(result) == 3
+        train_snids, train_dnids, train_labels, \
+            valid_snids, valid_dnids, valid_labels, \
+            test_snids, test_dnids, test_labels = result[('node','A','node')]
+        assert np.array_equal(np.array([0,1,2,3,3]), train_snids)
+        assert np.array_equal(np.array([1,0,0,2,3]), train_dnids)
+        assert valid_snids is None
+        assert valid_dnids is None
+        assert np.array_equal(np.array([3]), test_snids)
+        assert np.array_equal(np.array([3]), test_dnids)
+        assert train_labels is None
+        assert valid_labels is None
+        assert test_labels is None
+        train_snids, train_dnids, train_labels, \
+            valid_snids, valid_dnids, valid_labels, \
+            test_snids, test_dnids, test_labels = result[('node','C','node')]
+        assert train_snids is None
+        assert train_dnids is None
+        assert np.array_equal(np.array([0]), valid_snids)
+        assert np.array_equal(np.array([1]), valid_dnids)
+        assert np.array_equal(np.array([1,2]), test_snids)
+        assert np.array_equal(np.array([0,0]), test_dnids)
+        assert train_labels is None
+        assert valid_labels is None
+        assert test_labels is None
+        train_snids, train_dnids, train_labels, \
+            valid_snids, valid_dnids, valid_labels, \
+            test_snids, test_dnids, test_labels = result[('node','B','node')]
+        assert train_snids is None
+        assert train_dnids is None
+        assert np.array_equal(np.array([3]), valid_snids)
+        assert np.array_equal(np.array([2]), valid_dnids)
+        assert test_snids is None
+        assert test_dnids is None
+        assert train_labels is None
+        assert valid_labels is None
+        assert test_labels is None
+
+        np.random.seed(0)
+        label_loader = dgl_graphloader.EdgeLabelLoader(os.path.join(tmpdirname,
+                                                         'edge_label.csv'))
+        label_loader.addRelationalTrainSet([0,1,2])
+        label_loader.addRelationalSet([0,1,3], split_rate=[0.,0.4,0.6])
+        result = label_loader.process(node_dicts)
+        assert len(result) == 3
+        train_snids, train_dnids, train_labels, \
+            valid_snids, valid_dnids, valid_labels, \
+            test_snids, test_dnids, test_labels = result[('node','A','node')]
+        assert np.array_equal(np.array([0,1,2,3,3]), train_snids)
+        assert np.array_equal(np.array([1,0,0,2,3]), train_dnids)
+        assert np.array_equal(np.array([3]), test_snids)
+        assert np.array_equal(np.array([3]), test_dnids)
+        assert valid_snids is None
+        assert valid_dnids is None
+        assert train_labels is None
+        assert valid_labels is None
+        assert test_labels is None
+        train_snids, train_dnids, train_labels, \
+            valid_snids, valid_dnids, valid_labels, \
+            test_snids, test_dnids, test_labels = result[('node','C','node')]
+        assert train_snids is None
+        assert train_dnids is None
+        assert np.array_equal(np.array([2]), valid_snids)
+        assert np.array_equal(np.array([0]), valid_dnids)
+        assert np.array_equal(np.array([1,0]), test_snids)
+        assert np.array_equal(np.array([0,1]), test_dnids)
+        assert train_labels is None
+        assert valid_labels is None
+        assert test_labels is None
+        train_snids, train_dnids, train_labels, \
+            valid_snids, valid_dnids, valid_labels, \
+            test_snids, test_dnids, test_labels = result[('node','B','node')]
+        assert train_snids is None
+        assert train_dnids is None
+        assert valid_snids is None
+        assert valid_dnids is None
+        assert np.array_equal(np.array([3]), test_snids)
+        assert np.array_equal(np.array([2]), test_dnids)
+        assert train_labels is None
+        assert valid_labels is None
+        assert test_labels is None
+
 def test_edge_process():
     import tempfile
     with tempfile.TemporaryDirectory() as tmpdirname:
@@ -1695,11 +1804,45 @@ def test_add_reverse_edge():
         assert np.allclose(g.nodes['b'].data['nf'].numpy(),
             np.array([[1.,0.,],[1.,0.],[0.,1.],[1.,0.]]))
 
+        create_graph_edges(Path(tmpdirname), 'edge_label.csv')
+        label_loader = dgl_graphloader.EdgeLabelLoader(os.path.join(tmpdirname,
+                                                         'edge_label.csv'))
+        # only existence of the edge
+        label_loader.addRelationalTrainSet([0,1,2],rows=[0,1,2,3])
+        label_loader.addRelationalTrainSet([0,1,3],rows=[2,3])
+        label_loader.addRelationalValidSet([0,1,3],rows=[0])
+        label_loader.addRelationalTestSet([0,1,3],rows=[1,4])
+        graphloader = dgl_graphloader.GraphLoader(name='example')
+        graphloader.appendLabel(label_loader)
+        graphloader.addReverseEdge()
+        graphloader.process()
+        label_map = graphloader.label_map
+        assert len(label_map) == 0
+        g = graphloader.graph
+        assert th.nonzero(g.edges[('node','A','node')].data['train_mask']).shape[0] == 4
+        assert th.nonzero(g.edges[('node','A','node')].data['valid_mask']).shape[0] == 0
+        assert th.nonzero(g.edges[('node','A','node')].data['test_mask']).shape[0] == 1
+        assert th.nonzero(g.edges[('node','rev-A','node')].data['rev_train_mask']).shape[0] == 4
+        assert th.nonzero(g.edges[('node','rev-A','node')].data['rev_valid_mask']).shape[0] == 0
+        assert th.nonzero(g.edges[('node','rev-A','node')].data['rev_test_mask']).shape[0] == 1
+        assert th.nonzero(g.edges[('node','B','node')].data['train_mask']).shape[0] == 1
+        assert th.nonzero(g.edges[('node','B','node')].data['valid_mask']).shape[0] == 0
+        assert th.nonzero(g.edges[('node','B','node')].data['test_mask']).shape[0] == 0
+        assert th.nonzero(g.edges[('node','rev-B','node')].data['rev_train_mask']).shape[0] == 1
+        assert th.nonzero(g.edges[('node','rev-B','node')].data['rev_valid_mask']).shape[0] == 0
+        assert th.nonzero(g.edges[('node','rev-B','node')].data['rev_test_mask']).shape[0] == 0
+        assert th.nonzero(g.edges[('node','C','node')].data['train_mask']).shape[0] == 1
+        assert th.nonzero(g.edges[('node','C','node')].data['valid_mask']).shape[0] == 1
+        assert th.nonzero(g.edges[('node','C','node')].data['test_mask']).shape[0] == 1
+        assert th.nonzero(g.edges[('node','rev-C','node')].data['rev_train_mask']).shape[0] == 1
+        assert th.nonzero(g.edges[('node','rev-C','node')].data['rev_valid_mask']).shape[0] == 1
+        assert th.nonzero(g.edges[('node','rev-C','node')].data['rev_test_mask']).shape[0] == 1
+
 if __name__ == '__main__':
     # test Feature Loader
     test_node_category_feature_loader()
     test_node_numerical_feature_loader()
-    test_node_word2vec_feature_loader()
+    #test_node_word2vec_feature_loader()
     test_edge_numerical_feature_loader()
     # test Label Loader
     test_node_label_loader()
@@ -1713,6 +1856,7 @@ if __name__ == '__main__':
     # test label process
     test_node_label_process()
     test_edge_label_process()
+    test_relation_edge_label_process()
     # test edge process
     test_edge_process()
 

@@ -690,6 +690,52 @@ class EdgeLabelLoader(object):
         self._is_multilabel = None
         self._has_label = None
 
+    def _load_relation_labels(self, cols, rows):
+        rel_edges = {}
+        with open(self._input, newline='', encoding=self._encoding) as csvfile:
+            if isinstance(cols[0], str):
+                assert self._has_head, \
+                    "The column name is provided to identify the target column." \
+                    "The input csv should have the head field"
+                reader = csv.reader(csvfile, delimiter=self._separator)
+                heads = next(reader)
+                # find index of each target field name
+                idx_cols = field2idx(cols, heads)
+
+                assert len(idx_cols) == len(cols), \
+                    "one or more field names are not found in {}".format(self._input)
+                cols = idx_cols
+            else:
+                reader = csv.reader(csvfile, delimiter=self._separator)
+                if self._has_head:
+                    # skip field name
+                    next(reader)
+
+            # fast path, all rows are used
+            if rows is None:
+                for line in reader:
+                    rel_type = line[cols[2]]
+                    if rel_type in rel_edges:
+                        rel_edges[rel_type][0].append(line[cols[0]])
+                        rel_edges[rel_type][1].append(line[cols[1]])
+                    else:
+                        rel_edges[rel_type] = ([line[cols[0]]],[line[cols[1]]])
+            else:
+                row_idx = 0
+                for idx, line in enumerate(reader):
+                    if len(rows) == row_idx:
+                        break
+                    if rows[row_idx] == idx:
+                        rel_type = line[cols[2]]
+                        if rel_type in rel_edges:
+                            rel_edges[rel_type][0].append(line[cols[0]])
+                            rel_edges[rel_type][1].append(line[cols[1]])
+                        else:
+                            rel_edges[rel_type] = ([line[cols[0]]],[line[cols[1]]])
+                        row_idx += 1
+                    # else skip this line
+        return rel_edges
+
     def _load_labels(self, cols, multilabel=False, separator=None, rows=None):
         src_nodes = []
         dst_nodes = []
@@ -796,10 +842,11 @@ class EdgeLabelLoader(object):
             # check if same edge_type already exists
             if edge_type in results:
                 results[edge_type].append((snids, dnids, split))
-                total_labels[edge_type] = total_labels[edge_type] + labels
+                total_labels[edge_type] = total_labels[edge_type] + labels \
+                    if self._has_label else None
             else:
                 results[edge_type] = []
-                total_labels[edge_type] = labels
+                total_labels[edge_type] = labels if self._has_label else None
                 results[edge_type].append((snids, dnids, split))
 
         processed_labels = {}
@@ -856,12 +903,12 @@ class EdgeLabelLoader(object):
                     num_nids = snids.shape[0]
                     train_idx, valid_idx, test_idx = \
                         split_idx(num_nids, train_split, valid_split, test_split)
-                    train_snids = snids[train_idx]
-                    train_dnids = dnids[train_idx]
-                    valid_snids = snids[valid_idx]
-                    valid_dnids = dnids[valid_idx]
-                    test_snids = snids[test_idx]
-                    test_dnids = dnids[test_idx]
+                    train_snids = snids[train_idx] if len(train_idx) > 0 else None
+                    train_dnids = dnids[train_idx] if len(train_idx) > 0 else None
+                    valid_snids = snids[valid_idx] if len(valid_idx) > 0 else None
+                    valid_dnids = dnids[valid_idx] if len(valid_idx) > 0 else None
+                    test_snids = snids[test_idx] if len(test_idx) > 0 else None
+                    test_dnids = dnids[test_idx] if len(test_idx) > 0 else None
                     if labels is not None:
                         train_labels = labels[train_idx]
                         valid_labels = labels[valid_idx]
@@ -924,6 +971,8 @@ class EdgeLabelLoader(object):
         Multi-label is supported, but a separator is required to
         split the labels.
 
+        Parameters
+        ----------
         cols: list of str or list of int
             Which columns to use. Supported data formats are:
 
@@ -954,7 +1003,7 @@ class EdgeLabelLoader(object):
             Canonical edge type. If None, default edge type is chosen.
             Default: None
 
-        Examples:
+        Example
 
         ** Load train labels **
 
@@ -1019,6 +1068,90 @@ class EdgeLabelLoader(object):
                              labels,
                              (1., 0., 0.)))
 
+    def addRelationalTrainSet(self, cols, src_node_type='node', dst_node_type='node', rows=None):
+        r"""Add Training Set with multiple relation types.
+
+        Three columns of the **input** are chosen. the first
+        two columns represent the column names of the source
+        nodes and destination nodes while the last column give
+        the relation type.
+
+        Parameters
+        -----------
+        cols: list of str or list of int
+            Which columns to use. Supported data formats are:
+
+            (3) [str, str, str] column names for source node, destination node and labels.
+            The first column is treated as source node name,
+            the second column is treated as destination node name and
+            the third column is treated as relation type.
+            (4) [int, int, int] column numbers for node and labels.
+            The first column is treated as source node name,
+            the second column is treated as destination node name and
+            the third column is treated as relation type.
+
+        src_node_type: str
+            Source node type.
+            Default: 'node'
+
+        dst_node_type: str
+            Destination node type.
+            Default: 'node'
+
+        rows: numpy.array or list of int
+            Which row(s) to load. None to load all.
+            Default: None
+
+        Notes
+        -----
+        We can use this func to load knowledge graphs
+
+        Examples
+        --------
+
+        ** Load train labels **
+
+        Example data of label.csv is as follows:
+
+        ======  ========  ====
+        name    movie     rate
+        ======  ========  ====
+        John    StarWar1  5.0
+        Tim     X-Man     3.5
+        Maggie  StarWar1  4.5
+        ======  ========  ====
+
+        >>> label_loader = dgl.data.EdgeLabelLoader(input='label.csv',
+                                                    separator="\t")
+        >>> label_loader.addRelationalTrainSet(['name', 'movie', 'rate'],
+                                                src_node_type='name',
+                                                dst_node_type='movie',
+                                                rows=np.arange(start=0, stop=100))
+        """
+        if not isinstance(cols, list):
+            raise RuntimeError("The cols should be a list of string or int")
+
+        if len(cols) != 3:
+            raise RuntimeError("addRelationalTrainSet accepts three columns " \
+                           "for source node and destination node." \
+                           "or three columns, the first column for source node, " \
+                           "the second for destination node, " \
+                           "and third for relation")
+        # TODO(xiangsx) add label/multilabel support in the future
+
+        rel_edges = self._load_relation_labels(cols, rows)
+        assert self._has_label is None or self._has_label is False, \
+                'For a single edge label loader, it can be has-label or no-label ' \
+                'but it can not be both.'
+        self._has_label = False
+
+        for rel_type, (src_nodes, dst_nodes) in rel_edges.items():
+            self._labels.append(((src_node_type, rel_type, dst_node_type),
+                                src_nodes,
+                                dst_nodes,
+                                None,
+                                (1., 0., 0.)))
+
     def addValidSet(self, cols, multilabel=False, separator=None, rows=None, edge_type=None):
         r"""Add Validation Set.
 
@@ -1034,6 +1167,8 @@ class EdgeLabelLoader(object):
         Multi-label is supported, but a separator is required to
         split the labels.
 
+        Parameters
+        -----------
         cols: list of str or list of int
             Which columns to use. Supported data formats are:
 
@@ -1064,7 +1199,8 @@ class EdgeLabelLoader(object):
             Canonical edge type. If None, default edge type is chosen.
             Default: None
 
-        Examples:
+        Examples
+        ---------
 
         ** Load valid labels **
 
@@ -1129,6 +1265,90 @@ class EdgeLabelLoader(object):
                              labels,
                              (0., 1., 0.)))
 
+    def addRelationalValidSet(self, cols, src_node_type='node', dst_node_type='node', rows=None):
+        r"""Add Validation Set with multiple relation types.
+
+        Three columns of the **input** are chosen. the first
+        two columns represent the column names of the source
+        nodes and destination nodes while the last column give
+        the relation type.
+
+        Parameters
+        -----------
+        cols: list of str or list of int
+            Which columns to use. Supported data formats are:
+
+            (3) [str, str, str] column names for source node, destination node and labels.
+            The first column is treated as source node name,
+            the second column is treated as destination node name and
+            the third column is treated as relation type.
+            (4) [int, int, int] column numbers for node and labels.
+            The first column is treated as source node name,
+            the second column is treated as destination node name and
+            the third column is treated as relation type.
+
+        src_node_type: str
+            Source node type.
+            Default: 'node'
+
+        dst_node_type: str
+            Destination node type.
+            Default: 'node'
+
+        rows: numpy.array or list of int
+            Which row(s) to load. None to load all.
+            Default: None
+
+        Notes
+        -----
+        We can use this func to load knowledge graphs
+
+        Examples
+        --------
+
+        ** Load valid labels **
+
+        Example data of label.csv is as follows:
+
+        ======  ========  ====
+        name    movie     rate
+        ======  ========  ====
+        John    StarWar1  5.0
+        Tim     X-Man     3.5
+        Maggie  StarWar1  4.5
+        ======  ========  ====
+
+        >>> label_loader = dgl.data.EdgeLabelLoader(input='label.csv',
+                                                    separator="\t")
+        >>> label_loader.addRelationalValidSet(['name', 'movie', 'rate'],
+                                                src_node_type='name',
+                                                dst_node_type='movie',
+                                                rows=np.arange(start=0, stop=100))
+        """
+        if not isinstance(cols, list):
+            raise RuntimeError("The cols should be a list of string or int")
+
+        if len(cols) != 3:
+            raise RuntimeError("addRelationalValidSet accepts three columns " \
+                           "for source node and destination node." \
+                           "or three columns, the first column for source node, " \
+                           "the second for destination node, " \
+                           "and third for relation")
+        # TODO(xiangsx) add label/multilabel support in the future
+
+        rel_edges = self._load_relation_labels(cols, rows)
+        assert self._has_label is None or self._has_label is False, \
+                'For a single edge label loader, it can be has-label or no-label ' \
+                'but it can not be both.'
+        self._has_label = False
+
+        for rel_type, (src_nodes, dst_nodes) in rel_edges.items():
+            self._labels.append(((src_node_type, rel_type, dst_node_type),
+                                src_nodes,
+                                dst_nodes,
+                                None,
+                                (0., 1., 0.)))
+
     def addTestSet(self, cols, multilabel=False, separator=None, rows=None, edge_type=None):
         r"""Add Test Set.
 
@@ -1144,6 +1364,8 @@ class EdgeLabelLoader(object):
         Multi-label is supported, but a separator is required to
         split the labels.
 
+        Parameters
+        -----------
         cols: list of str or list of int
             Which columns to use. Supported data formats are:
 
@@ -1174,7 +1396,8 @@ class EdgeLabelLoader(object):
             Canonical edge type. If None, default edge type is chosen.
             Default: None
 
-        Examples:
+        Examples
+        ---------
 
         ** Load test labels **
 
@@ -1238,8 +1461,94 @@ class EdgeLabelLoader(object):
                              labels,
                              (0., 0., 1.)))
 
+    def addRelationalTestSet(self, cols, src_node_type='node', dst_node_type='node', rows=None):
+        r"""Add Testing Set with multiple relation types.
+
+        Three columns of the **input** are chosen. the first
+        two columns represent the column names of the source
+        nodes and destination nodes while the last column give
+        the relation type.
+
+
+        Parameters
+        -----------
+        cols: list of str or list of int
+            Which columns to use. Supported data formats are:
+
+            (3) [str, str, str] column names for source node, destination node and labels.
+            The first column is treated as source node name,
+            the second column is treated as destination node name and
+            the third column is treated as relation type.
+            (4) [int, int, int] column numbers for node and labels.
+            The first column is treated as source node name,
+            the second column is treated as destination node name and
+            the third column is treated as relation type.
+
+        src_node_type: str
+            Source node type.
+            Default: 'node'
+
+        dst_node_type: str
+            Destination node type.
+            Default: 'node'
+
+        rows: numpy.array or list of int
+            Which row(s) to load. None to load all.
+            Default: None
+
+        Notes
+        -----
+        We can use this func to load knowledge graphs
+
+        Examples
+        --------
+
+        ** Load test labels **
+
+        Example data of label.csv is as follows:
+
+        ======  ========  ====
+        name    movie     rate
+        ======  ========  ====
+        John    StarWar1  5.0
+        Tim     X-Man     3.5
+        Maggie  StarWar1  4.5
+        ======  ========  ====
+
+        >>> label_loader = dgl.data.EdgeLabelLoader(input='label.csv',
+                                                    separator="\t")
+        >>> label_loader.addRelationalTestSet(['name', 'movie', 'rate'],
+                                                src_node_type='name',
+                                                dst_node_type='movie',
+                                                rows=np.arange(start=0, stop=100))
+
+        """
+        if not isinstance(cols, list):
+            raise RuntimeError("The cols should be a list of string or int")
+
+        if len(cols) != 3:
+            raise RuntimeError("addRelationalTestSet accepts three columns " \
+                           "for source node and destination node." \
+                           "or three columns, the first column for source node, " \
+                           "the second for destination node, " \
+                           "and third for relation")
+        # TODO(xiangsx) add label/multilabel support in the future
+
+        rel_edges = self._load_relation_labels(cols, rows)
+        assert self._has_label is None or self._has_label is False, \
+                'For a single edge label loader, it can be has-label or no-label ' \
+                'but it can not be both.'
+        self._has_label = False
+
+        for rel_type, (src_nodes, dst_nodes) in rel_edges.items():
+            self._labels.append(((src_node_type, rel_type, dst_node_type),
+                                src_nodes,
+                                dst_nodes,
+                                None,
+                                (0., 0., 1.)))
+
     def addSet(self, cols, split_rate, multilabel=False, separator=None, rows=None, edge_type=None):
-        r"""Add Test Set.
+        r"""Add Train/Valid/Test Set.
 
         Two or three columns of the **input** are chosen.
 
@@ -1253,6 +1562,8 @@ class EdgeLabelLoader(object):
         Multi-label is supported, but a separator is required to
         split the labels.
 
+        Parameters
+        -----------
         cols: list of str or list of int
             Which columns to use. Supported data formats are:
 
@@ -1268,8 +1579,8 @@ class EdgeLabelLoader(object):
             the third column is treated as label.
 
         split_rate: triple of float
-            [train, valid, test]: Random split rate, train + valid + test = 1.0, any of train, valid and test can be 0.0
-
+            [train, valid, test]: Random split rate, train + valid + test = 1.0,
+            any of train, valid and test can be 0.0
 
         multilabel: bool
             Whether it is a multi-label task.
@@ -1306,6 +1617,7 @@ class EdgeLabelLoader(object):
         >>> label_loader.addSet(['name', 'movie', 'rate'],
                                 rows=np.arange(start=0, stop=100),
                                 split_rate=[0.7,0.2,0.1])
+
         """
         if not isinstance(cols, list):
             raise RuntimeError("The cols should be a list of string or int")
@@ -1358,6 +1670,105 @@ class EdgeLabelLoader(object):
                              dst_nodes,
                              labels,
                              (split_rate[0], split_rate[1], split_rate[2])))
+
+    def addRelationalSet(self, cols, split_rate, src_node_type='node', dst_node_type='node', rows=None):
+        r"""Add Train/Valid/Test Set with multiple relation types.
+
+        Three columns of the **input** are chosen. the first
+        two columns represent the column names of the source
+        nodes and destination nodes while the last column give
+        the relation type.
+
+        Parameters
+        -----------
+        cols: list of str or list of int
+            Which columns to use. Supported data formats are:
+
+            (3) [str, str, str] column names for source node, destination node and labels.
+            The first column is treated as source node name,
+            the second column is treated as destination node name and
+            the third column is treated as relation type.
+            (4) [int, int, int] column numbers for node and labels.
+            The first column is treated as source node name,
+            the second column is treated as destination node name and
+            the third column is treated as relation type.
+
+        split_rate: triple of float
+            [train, valid, test]: Random split rate, train + valid + test = 1.0,
+            any of train, valid and test can be 0.0
+
+        src_node_type: str
+            Source node type.
+            Default: 'node'
+
+        dst_node_type: str
+            Destination node type.
+            Default: 'node'
+
+        rows: numpy.array or list of int
+            Which row(s) to load. None to load all.
+            Default: None
+
+        Notes
+        -----
+        We can use this func to load knowledge graphs
+
+        **Local random split (with the split_rate) is taken on each relation type (edge type).**
+
+
+        Examples
+        --------
+
+        ** Load train labels **
+
+        Example data of label.csv is as follows:
+
+        ======  ========  ====
+        name    movie     rate
+        ======  ========  ====
+        John    StarWar1  5.0
+        Tim     X-Man     3.5
+        Maggie  StarWar1  4.5
+        ======  ========  ====
+
+        >>> label_loader = dgl.data.EdgeLabelLoader(input='label.csv',
+                                                    separator="\t")
+        >>> label_loader.addRelationalSet(['name', 'movie', 'rate'],
+                                          split_rate=[0.7,0.2,0.1],
+                                          src_node_type='name',
+                                          dst_node_type='movie',
+                                          rows=np.arange(start=0, stop=100))
+
+        """
+        if not isinstance(cols, list):
+            raise RuntimeError("The cols should be a list of string or int")
+
+        if len(cols) != 3:
+            raise RuntimeError("addRelationalTestSet accepts three columns " \
+                           "for source node and destination node." \
+                           "or three columns, the first column for source node, " \
+                           "the second for destination node, " \
+                           "and third for relation")
+
+        if not isinstance(split_rate, list) or len(split_rate) != 3:
+            raise RuntimeError("The split_rate should be a list of three floats")
+        if split_rate[0] < 0 or split_rate[1] < 0 or split_rate[2] < 0:
+            raise RuntimeError("Split rates must >= 0.")
+        if split_rate[0] + split_rate[1] + split_rate[2] != 1.:
+            raise RuntimeError("The sum of split rates should be 1.")
+
+        # TODO(xiangsx) add label/multilabel support in the future
+        rel_edges = self._load_relation_labels(cols, rows)
+        assert self._has_label is None or self._has_label is False, \
+                'For a single edge label loader, it can be has-label or no-label ' \
+                'but it can not be both.'
+        self._has_label = False
+        for rel_type, (src_nodes, dst_nodes) in rel_edges.items():
+            self._labels.append(((src_node_type, rel_type, dst_node_type),
+                                src_nodes,
+                                dst_nodes,
+                                None,
+                                (split_rate[0], split_rate[1], split_rate[2])))
 
     @property
     def node_label(self):
