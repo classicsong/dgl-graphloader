@@ -897,7 +897,7 @@ class NodeFeatureLoader(object):
             Node type. If None, default node type is chosen.
             Default: None
 
-        Note:
+        Notes:
         -----
         The language model support is backed by scapy
 
@@ -1013,7 +1013,9 @@ class EdgeFeatureLoader(object):
         Whether print debug info during parsing
         Default: False
 
-    Note: Currently, we only support raw csv file input.
+    Notes:
+
+    Currently, we only support raw csv file input.
 
     If eager_mode is True, the loader will processing
     the features immediately after addXXXFeature

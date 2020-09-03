@@ -1340,12 +1340,12 @@ def test_build_graph():
         graphloader.appendFeature(node_feat_loader)
         graphloader.process()
 
-        node_id_map = graphloader.node_2_id
+        node_id_map = graphloader.node2id
         assert None in node_id_map
         assert len(node_id_map[None]) == 4
         for idx, key in enumerate(['node1', 'node2', 'node3', 'node4']):
             assert node_id_map[None][key] == idx
-        id_node_map = graphloader.id_2_node
+        id_node_map = graphloader.id2node
         assert None in id_node_map
         assert len(id_node_map[None]) == 4
         for idx, key in enumerate(['node1', 'node2', 'node3', 'node4']):
@@ -1391,12 +1391,12 @@ def test_build_graph():
         graphloader.appendFeature(node_feat_loader2)
         graphloader.process()
 
-        node_id_map = graphloader.node_2_id
+        node_id_map = graphloader.node2id
         assert 'a' in node_id_map
         assert len(node_id_map['a']) == 4
         for idx, key in enumerate(['node1', 'node2', 'node3', 'node4']):
             assert node_id_map['a'][key] == idx
-        id_node_map = graphloader.id_2_node
+        id_node_map = graphloader.id2node
         assert 'a' in id_node_map
         assert len(id_node_map['a']) == 4
         for idx, key in enumerate(['node1', 'node2', 'node3', 'node4']):
@@ -1450,12 +1450,12 @@ def test_build_graph():
         graphloader.appendFeature(node_feat_loader)
         graphloader.appendFeature(node_feat_loader2)
         graphloader.process()
-        node_id_map = graphloader.node_2_id
+        node_id_map = graphloader.node2id
         assert 'b' in node_id_map
         assert len(node_id_map['b']) == 4
         for idx, key in enumerate(['node1', 'node2', 'node3', 'node4']):
             assert node_id_map['b'][key] == idx
-        id_node_map = graphloader.id_2_node
+        id_node_map = graphloader.id2node
         assert 'b' in id_node_map
         assert len(id_node_map['b']) == 4
         for idx, key in enumerate(['node1', 'node2', 'node3', 'node4']):
@@ -1543,12 +1543,12 @@ def test_build_graph():
         graphloader.appendFeature(node_feat_loader)
         graphloader.process()
 
-        node_id_map = graphloader.node_2_id
+        node_id_map = graphloader.node2id
         assert 'a' in node_id_map
         assert len(node_id_map['a']) == 8
         for idx, key in enumerate(['node1', 'node2', 'node3', 'node4', 'node5', 'node6', 'node7', 'node8']):
             assert node_id_map['a'][key] == idx
-        id_node_map = graphloader.id_2_node
+        id_node_map = graphloader.id2node
         assert 'a' in id_node_map
         assert len(id_node_map['a']) == 8
         for idx, key in enumerate(['node1', 'node2', 'node3', 'node4', 'node5', 'node6', 'node7', 'node8']):

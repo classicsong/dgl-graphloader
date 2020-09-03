@@ -38,7 +38,21 @@ class GraphLoader(object):
         Whether print debug info during parsing
         Default: False
 
-    Note:
+    Attributes
+    ----------
+    node2id: dict of dict
+        The mappings from raw node id/name to internal node id.
+        {node_type : {raw node id(string/int): dgl_id}}
+    id2node: dict of dict
+        The mappings from internal node id to raw node id/name.
+        {node_type : {raw node id(string/int): dgl_id}}
+    label_map: dict of dict
+        The mapping from internal label id to original label.
+        {node/edge_type: {label id(int) : raw label(string/int)}}
+    graph: DGLGraph
+        The generated DGLGraph
+
+    Notes
     -----
 
     **EdgeLoader is used to add edges that neither have features nor appeared in
@@ -49,9 +63,29 @@ class GraphLoader(object):
 
     Example:
 
+    ** Creat a FeatureLoader to load user features from u.csv.**
+
+    >>> user_loader = dgl.data.FeatureLoader(input='u.csv',
+                                             separator="|")
+    >>> user_loader.addCategoryFeature(cols=["id", "gender"], node_type='user')
+
+    ** create node label loader to load labels **
+
+    >>> label_loader = dgl.data.NodeLabelLoader(input='label.csv',
+                                                separator="|")
+    >>> label_loader.addTrainSet([0, 1], rows=np.arange(start=0,
+                                                        stop=100))
+
     ** Create a Graph Loader **
 
     >>> graphloader = dgl.data.GraphLoader(name='example')
+    >>> graphloader.appendFeature(user_loader)
+    >>> graphloader.appendLabel(label_loader)
+
+    ** Process the graph inputs **
+
+    >>> graphloader.process()
+    >>> g = graphloader.graph
 
     """
     def __init__(self, name='graph',
@@ -152,11 +186,6 @@ class GraphLoader(object):
         label_loader: NodeLabelLoader or EdgeLabelLoader
             label loaders to load graph edges
             default: None
-
-        Note
-        ----
-        To keep the overall design of the GraphLoader simple,
-        it accepts only one LabelLoader.
 
         Examples:
 
@@ -690,7 +719,7 @@ class GraphLoader(object):
         self._label_map = info['label_map']
 
     @property
-    def node_2_id(self):
+    def node2id(self):
         """ Return mappings from raw node id/name to internal node id
 
         Return
@@ -701,7 +730,7 @@ class GraphLoader(object):
         return self._node_dict
 
     @property
-    def id_2_node(self):
+    def id2node(self):
         """ Return mappings from internal node id to raw node id/name
 
         Return
