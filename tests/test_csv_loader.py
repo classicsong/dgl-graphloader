@@ -1580,6 +1580,121 @@ def test_build_graph():
         assert np.array_equal(g.edges[('a', 'in', 'aa')].data['ef'].numpy(),
             np.array([[0.1],[0.2],[0.3],[0.4],[0.5],[0.6],[0.7],[0.8],[0.9]]))
 
+def test_add_reverse_edge():
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        create_graph_edges(Path(tmpdirname), 'edges.csv')
+        create_edge_labels(Path(tmpdirname), 'edge_labels.csv')
+        create_node_labels(Path(tmpdirname), 'node_labels.csv')
+        create_train_edge_labels(Path(tmpdirname), 'edge_train_labels.csv')
+
+        node_feat_loader = dgl_graphloader.NodeFeatureLoader(os.path.join(tmpdirname, 'node_labels.csv'))
+        node_feat_loader.addCategoryFeature([0,1], node_type='a')
+        node_feat_loader.addMultiCategoryFeature([0,2], separator=',', node_type='a')
+        edge_label_loader = dgl_graphloader.EdgeLabelLoader(os.path.join(tmpdirname, 'edge_labels.csv'))
+        edge_label_loader.addSet([0,1,2],split_rate=[0.5,0.25,0.25], edge_type=('a', 'follow', 'b'))
+        edge_train_label_loader = dgl_graphloader.EdgeLabelLoader(os.path.join(tmpdirname, 'edge_train_labels.csv'))
+        edge_train_label_loader.addTrainSet([0,1,2], edge_type=('a', 'follow', 'b'))
+        edge_loader = dgl_graphloader.EdgeLoader(os.path.join(tmpdirname, 'edges.csv'))
+        edge_loader.addEdges([0,1], edge_type=('a', 'follow', 'b'))
+        node_feat_loader2 = dgl_graphloader.NodeFeatureLoader(os.path.join(tmpdirname, 'node_labels.csv'))
+        node_feat_loader2.addCategoryFeature([0,1], node_type='b')
+        edge_loader2 = dgl_graphloader.EdgeLoader(os.path.join(tmpdirname, 'edges.csv'))
+        edge_loader2.addEdges([0,1], edge_type=('b', 'follow', 'a'))
+
+        np.random.seed(0)
+        graphloader = dgl_graphloader.GraphLoader(name='example')
+        graphloader.appendEdge(edge_loader)
+        graphloader.appendEdge(edge_loader2)
+        graphloader.appendLabel(edge_label_loader)
+        graphloader.appendLabel(edge_train_label_loader)
+        graphloader.appendFeature(node_feat_loader)
+        graphloader.appendFeature(node_feat_loader2)
+        graphloader.addReverseEdge()
+        graphloader.process()
+
+        node_id_map = graphloader.node2id
+        assert 'a' in node_id_map
+        assert len(node_id_map['a']) == 4
+        for idx, key in enumerate(['node1', 'node2', 'node3', 'node4']):
+            assert node_id_map['a'][key] == idx
+        id_node_map = graphloader.id2node
+        assert 'a' in id_node_map
+        assert len(id_node_map['a']) == 4
+        for idx, key in enumerate(['node1', 'node2', 'node3', 'node4']):
+            assert id_node_map['a'][idx] == key
+        assert 'b' in node_id_map
+        assert len(node_id_map['b']) == 4
+        for idx, key in enumerate(['node2', 'node1', 'node3', 'node4']):
+            assert node_id_map['b'][key] == idx
+        assert 'b' in id_node_map
+        assert len(id_node_map['b']) == 4
+        for idx, key in enumerate(['node2', 'node1', 'node3', 'node4']):
+            assert id_node_map['b'][idx] == key
+
+        label_map = graphloader.label_map
+        assert len(label_map[('a', 'follow', 'b')]) == 2
+        assert label_map[('a', 'follow', 'b')][0] == 'A'
+        assert label_map[('a', 'follow', 'b')][1] == 'C'
+        g = graphloader.graph
+        assert g.num_edges(('a', 'follow', 'b')) == 11
+        assert g.num_edges(('b', 'follow', 'a')) == 5
+        assert g.num_edges(('b', 'rev-follow', 'a')) == 11
+        assert g.num_edges(('a', 'rev-follow', 'b')) == 5
+        assert 'labels' in g.edges[('a', 'follow', 'b')].data
+        assert 'labels' not in g.edges[('b', 'rev-follow', 'a')].data
+        assert th.nonzero(g.edges[('a', 'follow', 'b')].data['train_mask']).shape[0] == 4
+        assert th.nonzero(g.edges[('a', 'follow', 'b')].data['valid_mask']).shape[0] == 1
+        assert th.nonzero(g.edges[('a', 'follow', 'b')].data['test_mask']).shape[0] == 1
+        assert th.nonzero(g.edges[('b', 'rev-follow', 'a')].data['rev_train_mask']).shape[0] == 4
+        assert th.nonzero(g.edges[('b', 'rev-follow', 'a')].data['rev_valid_mask']).shape[0] == 1
+        assert th.nonzero(g.edges[('b', 'rev-follow', 'a')].data['rev_test_mask']).shape[0] == 1
+        assert np.allclose(g.nodes['a'].data['nf'].numpy(),
+            np.array([[1,0,1,0,0,1,0,0,0],[1,0,0,0,1,1,1,0,0],[0,1,1,1,0,0,0,1,0],[1,0,0,0,0,0,1,0,1]]))
+        assert np.allclose(g.nodes['b'].data['nf'].numpy(),
+            np.array([[1.,0.,],[1.,0.],[0.,1.],[1.,0.]]))
+
+        # heterogeneous graph loader (edge no labels)
+        node_feat_loader = dgl_graphloader.NodeFeatureLoader(os.path.join(tmpdirname, 'node_labels.csv'))
+        node_feat_loader.addCategoryFeature([0,1], node_type='a')
+        node_feat_loader.addMultiCategoryFeature([0,2], separator=',', node_type='a')
+        edge_label_loader = dgl_graphloader.EdgeLabelLoader(os.path.join(tmpdirname, 'edge_labels.csv'))
+        edge_label_loader.addSet([0,1],split_rate=[0.5,0.25,0.25], edge_type=('a', 'follow', 'b'))
+        edge_loader = dgl_graphloader.EdgeLoader(os.path.join(tmpdirname, 'edges.csv'))
+        edge_loader.addEdges([0,1], edge_type=('a', 'follow', 'b'))
+        node_feat_loader2 = dgl_graphloader.NodeFeatureLoader(os.path.join(tmpdirname, 'node_labels.csv'))
+        node_feat_loader2.addCategoryFeature([0,1], node_type='b')
+        edge_loader2 = dgl_graphloader.EdgeLoader(os.path.join(tmpdirname, 'edges.csv'))
+        edge_loader2.addEdges([0,1], edge_type=('b', 'follow', 'a'))
+
+        np.random.seed(0)
+        graphloader = dgl_graphloader.GraphLoader(name='example')
+        graphloader.appendEdge(edge_loader)
+        graphloader.appendEdge(edge_loader2)
+        graphloader.appendLabel(edge_label_loader)
+        graphloader.appendFeature(node_feat_loader)
+        graphloader.appendFeature(node_feat_loader2)
+        graphloader.addReverseEdge()
+        graphloader.process()
+
+        label_map = graphloader.label_map
+        assert len(label_map) == 0
+        g = graphloader.graph
+        assert g.num_edges(('a', 'follow', 'b')) == 9
+        assert g.num_edges(('b', 'follow', 'a')) == 5
+        assert g.num_edges(('b', 'rev-follow', 'a')) == 9
+        assert g.num_edges(('a', 'rev-follow', 'b')) == 5
+        assert th.nonzero(g.edges[('a', 'follow', 'b')].data['train_mask']).shape[0] == 2
+        assert th.nonzero(g.edges[('a', 'follow', 'b')].data['valid_mask']).shape[0] == 1
+        assert th.nonzero(g.edges[('a', 'follow', 'b')].data['test_mask']).shape[0] == 1
+        assert th.nonzero(g.edges[('b', 'rev-follow', 'a')].data['rev_train_mask']).shape[0] == 2
+        assert th.nonzero(g.edges[('b', 'rev-follow', 'a')].data['rev_valid_mask']).shape[0] == 1
+        assert th.nonzero(g.edges[('b', 'rev-follow', 'a')].data['rev_test_mask']).shape[0] == 1
+        assert np.allclose(g.nodes['a'].data['nf'].numpy(),
+            np.array([[1,0,1,0,0,1,0,0,0],[1,0,0,0,1,1,1,0,0],[0,1,1,1,0,0,0,1,0],[1,0,0,0,0,0,1,0,1]]))
+        assert np.allclose(g.nodes['b'].data['nf'].numpy(),
+            np.array([[1.,0.,],[1.,0.],[0.,1.],[1.,0.]]))
+
 if __name__ == '__main__':
     # test Feature Loader
     test_node_category_feature_loader()
@@ -1602,3 +1717,4 @@ if __name__ == '__main__':
     test_edge_process()
 
     test_build_graph()
+    test_add_reverse_edge()

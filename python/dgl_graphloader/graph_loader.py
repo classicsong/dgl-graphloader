@@ -14,6 +14,9 @@ from .csv_feature_loader import NodeFeatureLoader, EdgeFeatureLoader
 from .csv_feature_loader import EdgeLoader
 from .csv_label_loader import NodeLabelLoader, EdgeLabelLoader
 
+def _gen_reverse_etype(etype):
+    return (etype[2], 'rev-'+etype[1], etype[0])
+
 class GraphLoader(object):
     r""" Generate DGLGraph by parsing files.
 
@@ -118,6 +121,7 @@ class GraphLoader(object):
         else:
             self._label_loader = []
 
+        self._add_reverse = False
         self._graph = None
         self._verbose = verbose
         self._node_dict = {}
@@ -217,7 +221,18 @@ class GraphLoader(object):
         and adds edges belong to ('head', 'rel', 'tail') into
         new relation type with reversed head and tail entity order.
 
-        Example:
+        Notes
+        -----
+
+        Edge features are ignored.
+
+        If the source edges have builtin features such as `train_mask`,
+        `valid_mask` and `test_mask`, the corresponding `rev_train_mask`,
+        `rev_valid_mask` and `rev_test_mask` features are added for the
+        reversed edges.
+
+        Example
+        -------
 
         ** create edge loader to load edges **
 
@@ -237,14 +252,12 @@ class GraphLoader(object):
 
         >>> graphloader.addReverseEdge()
 
-        """
-        assert self._g.is_homogeneous is False, \
-            'Add reversed edges only work for heterogeneous graph'
+        ** process graph **
 
-        new_g = dgl.add_reverse_edges(self._g, copy_ndata=True, copy_edata=False)
-        for etype in self._g.canonical_etypes:
-            new_g.edges[etype].data = self._g.edges[etype].data
-        self._g = new_g
+        >>> graphloader.process()
+
+        """
+        self._add_reverse = True
 
     def process(self):
         """ Parsing EdgeLoaders, FeatureLoaders and LabelLoders to build the DGLGraph
@@ -414,7 +427,11 @@ class GraphLoader(object):
                 'With heterogeneous graph, all edges should have edge type'
             assert None not in nodes, \
                 'With heterogeneous graph, all nodes should have node type'
-            graph_edges = {key: (val[0], val[1]) for key, val in graphs.items()}
+            graph_edges = {}
+            for key, val in graphs.items():
+                graph_edges[key] = (val[0], val[1])
+                if self._add_reverse:
+                    graph_edges[_gen_reverse_etype(key)] = (val[1], val[0])
             for etype, (src_nids, dst_nids) in graph_edges.items():
                 src_max_nid = int(np.max(src_nids))+1
                 dst_max_nid = int(np.max(dst_nids))+1
@@ -589,6 +606,12 @@ class GraphLoader(object):
                 g.edges[edge_type].data['train_mask'] = train_mask
                 g.edges[edge_type].data['valid_mask'] = valid_mask
                 g.edges[edge_type].data['test_mask'] = test_mask
+
+                if self._add_reverse:
+                    reverse_edge_type = _gen_reverse_etype(edge_type)
+                    g.edges[reverse_edge_type].data['rev_train_mask'] = train_mask
+                    g.edges[reverse_edge_type].data['rev_valid_mask'] = valid_mask
+                    g.edges[reverse_edge_type].data['rev_test_mask'] = test_mask
 
         # node labels
         train_node_labels = {}
