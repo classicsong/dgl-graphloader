@@ -39,10 +39,10 @@ class NodeFeatureLoader(object):
         Input file encoding
         Default: 'utf-8'
     verbose: bool, optional
-        Whether print debug info during parsing
+        Whether print debug info during parsing.
         Default: False
 
-    Note:
+    Notes
     -----
 
     * Currently, we only support raw csv file input.
@@ -60,7 +60,8 @@ class NodeFeatureLoader(object):
     * If eager_mode if False, the features are not
     processed until building the DGLGraph.
 
-    Examples:
+    Examples
+    --------
 
     ** Creat a FeatureLoader to load user features from u.csv. **
 
@@ -90,6 +91,7 @@ class NodeFeatureLoader(object):
     >>> graphloader.appendFeature(user_loader)
     >>> graphloader.appendFeature(movie_loader)
 
+
     """
     def __init__(self, input, separator='\t', has_head=True, int_id=False, eager_mode=False,
         encoding='utf-8', verbose=False):
@@ -113,12 +115,14 @@ class NodeFeatureLoader(object):
         Nodes are converted into consecutive integer ID spaces and
         its corresponding features are concatenated together.
 
-        Params:
+        Parameters
+        ----------
         node_dicts: dict of dict
             {node_type: {node_str : node_id}}
 
-        Return:
-            dict
+        Return
+        ------
+        dict
             {node_type: (node_ids, node_feats)}
         """
         results = {}
@@ -201,23 +205,25 @@ class NodeFeatureLoader(object):
             Node type. If None, default node type is chosen.
             Default: None
 
-        Note:
+        Notes
+        -----
 
         * Empty string is allowed when there are multiple columns
         storing the category info.
 
-        Example:
+        Examples
+        --------
 
         ** Load category features for single category column **
 
         Example data of u.csv is as follows:
-            ====    ======
+            ======  ======
             name    gender
-            ====    ======
+            ======  ======
             John    M
             Tim     M
-            Maggy   F
-            ====    ======
+            Maggie  F
+            ======  ======
 
         >>> user_loader = dgl.data.FeatureLoader(input='u.csv',
                                                 separator="|",
@@ -228,19 +234,20 @@ class NodeFeatureLoader(object):
 
         Example data of u.csv is as follows:
 
-            ====    ======== ========
+            ======  ======== ========
             name    role1    role2
-            ====    ======== ========
+            ======  ======== ========
             John    Actor    Director
             Tim     Director Writer
-            Maggy   Actor
-            ====    ======== ========
+            Maggie  Actor
+            ======  ======== ========
 
         >>> user_loader = dgl.data.FeatureLoader(input='u.csv',
                                                 separator="|",
                                                 has_head=True)
         >>> user_loader.addCategoryFeature(cols=["name", "role1", "role2"],
                                         norm='col')
+
         """
         if not isinstance(cols, list):
             raise RuntimeError("The cols should be a list of string or int")
@@ -373,31 +380,32 @@ class NodeFeatureLoader(object):
             Node type. If None, default node type is chosen.
             Default: None
 
-        Note
+        Notes
         -----
 
         Values in ``rows`` should be in accending order.
 
-        Example
-        -------
+        Examples
+        --------
 
         ** Load category features **
 
         Example data of u.csv is as follows:
 
-            ====    ======
+            ======  ======
             name    role
-            ====    ======
+            ======  ======
             John    Actor,Director
             Tim     Director,Writer
-            Maggy   Actor
-            ====    ======
+            Maggie  Actor
+            ======  ======
 
         >>> user_loader = dgl.data.FeatureLoader(input='u.csv',
                                                 separator="|",
                                                 has_head=True)
         >>> user_loader.addMultiCategoryFeature(cols=["name", "role"],
                                                 separator=',')
+
         """
         if not isinstance(cols, list):
             raise RuntimeError("The cols should be a list of string or int")
@@ -499,24 +507,26 @@ class NodeFeatureLoader(object):
             Node type. If None, default node type is chosen.
             Default: None
 
-        Example:
+        Examples
+        --------
 
         ** Load numerical features **
 
         Example data of u.csv is as follows:
 
-            ====    ======
+            ======  ======
             name    weight
-            ====    ======
+            ======  ======
             John    120.3
             Tim     100.2
-            Maggy   110.5
-            ====    ======
+            Maggie  110.5
+            ======  ======
 
         >>> user_loader = dgl.data.FeatureLoader(input='u.csv',
                                                 separator="|",
                                                 has_head=True)
         >>> user_loader.addNumericalFeature(cols=["name", "weight"])
+
         """
         if not isinstance(cols, list):
             raise RuntimeError("The cols should be a list of string or int")
@@ -629,24 +639,26 @@ class NodeFeatureLoader(object):
             Node type. If None, default node type is chosen.
             Default: None
 
-        Example:
+        Examples
+        --------
 
         ** Load numerical features **
 
         Example data of u.csv is as follows:
 
-            ====    ======
+            ======  ======
             name    feature
-            ====    ======
+            ======  ======
             John    1.,2.
             Tim     1.,-1.
-            Maggy   2.,3.
-            ====    ======
+            Maggie  2.,3.
+            ======  ======
 
         >>> user_loader = dgl.data.FeatureLoader(input='u.csv',
                                                 separator="|",
                                                 has_head=True)
         >>> user_loader.addNumericalFeature(cols=["name", "feature"])
+
         """
         if not isinstance(cols, list):
             raise RuntimeError("The cols should be a list of string or int")
@@ -756,7 +768,8 @@ class NodeFeatureLoader(object):
             Node type. If None, default node type is chosen.
             Default: None
 
-        Note:
+        Notes
+        -----
 
         * The encoding algorithm is as:
 
@@ -765,19 +778,20 @@ class NodeFeatureLoader(object):
         >>> high = value + slide_window_size/2
         >>> bucket = [i for i in range(math.ceil(low/bucket_size), math.floor(high/bucket_size))]
 
-        Example:
+        Examples
+        --------
 
         ** Load numerical data into bucket features **
 
         Example data of u.csv is as follows:
 
-        ====    ===
+        ======  ===
         name    age
-        ====    ===
+        ======  ===
         John    21
         Tim     31
-        Maggy   55
-        ====    ===
+        Maggie  55
+        ======  ===
 
         >>> user_loader = dgl.data.FeatureLoader(input='u.csv',
                                                 separator="|",
@@ -786,11 +800,11 @@ class NodeFeatureLoader(object):
                                                 range=[0,100],
                                                 bucket_cnt=10,
                                                 slide_window_size=5.0)
-        ** multi-hop feature of John, Tim and Maggy **
+        ** multi-hop feature of John, Tim and Maggie **
 
         John: [0, 1, 1, 0, 0, 0, 0, 0, 0, 0]
         Tim:  [0, 0, 1, 1, 0, 0, 0, 0, 0, 0]
-        Maggy:[0, 0, 0, 0, 0, 1, 1, 0, 0, 0]
+        Maggie:[0, 0, 0, 0, 0, 1, 1, 0, 0, 0]
 
         """
         if not isinstance(cols, list):
@@ -898,7 +912,7 @@ class NodeFeatureLoader(object):
             Default: None
 
         Notes:
-        -----
+        ------
         The language model support is backed by scapy
 
         Example:
@@ -908,13 +922,13 @@ class NodeFeatureLoader(object):
 
         Example data of u.csv is as follows:
 
-        ====    ===
+        ======  ===
         name    title
-        ====    ===
-        Paper1  'Modeling Relational Data with Graph Convolutional     Networks'
+        ======  ===
+        Paper1  'Modeling Relational Data with Graph Convolutional Networks'
         Paper2  'Convolutional neural networks on graphs with fast localized spectral filtering'
         Paper3  'Translating embeddings for modeling multi-relational data'
-        ====    ===
+        ======  ===
 
         >>> user_loader = dgl.data.FeatureLoader(input='paper.csv',
                                                     separator="|",
@@ -1013,7 +1027,8 @@ class EdgeFeatureLoader(object):
         Whether print debug info during parsing
         Default: False
 
-    Notes:
+    Notes
+    -----
 
     Currently, we only support raw csv file input.
 
@@ -1025,7 +1040,8 @@ class EdgeFeatureLoader(object):
     If eager_mode if False, the features are not
     processed until building the DGLGraph.
 
-    Examples:
+    Examples
+    --------
 
     ** Creat a EdgeFeatureLoader to load edge features from data.csv. **
 
@@ -1060,13 +1076,16 @@ class EdgeFeatureLoader(object):
         Src and dst nodes are converted into consecutive integer ID spaces and
         the edge features are concatenated together.
 
-        Params:
+        Parameters
+        ----------
         node_dicts: dict of dict
             {node_type: {node_str : node_id}}
 
-        Return:
-            dict
+        Return
+        ------
+        dict
             {edge_type: (snids, dnids, edge_feats)}
+
         """
         results = {}
         for raw_feat in self._raw_features:
@@ -1168,24 +1187,26 @@ class EdgeFeatureLoader(object):
             If None, default canonical edge type is chosen.
             Default: None
 
-        Example:
+        Examples
+        --------
 
         ** Load numerical features **
 
         Example data of data.csv is as follows:
 
-        ====    ========  ====
+        ======  ========  ====
         name    movie     rate
-        ====    ========  ====
+        ======  ========  ====
         John    StarWar1  5.0
         Tim     X-Man     3.5
-        Maggy   StarWar1  4.5
-        ====    ========  ====
+        Maggie  StarWar1  4.5
+        ======  ========  ====
 
         >>> user_loader = dgl.data.FeatureLoader(input='data.csv',
                                                     separator="|",
                                                     has_head=True)
         >>> user_loader.addNumericalFeature(cols=["name", "movie", "rate"])
+
         """
         if not isinstance(cols, list):
             raise RuntimeError("The cols should be a list of string or int")
@@ -1283,7 +1304,8 @@ class EdgeLoader(object):
         Whether print debug info during parsing
         Default: False
 
-    Note:
+    Notes
+    -----
 
     * Currently, we only support raw csv file input.
 
@@ -1296,7 +1318,8 @@ class EdgeLoader(object):
     * If eager_mode if False, the edges are not
     processed until building the DGLGraph.
 
-    Examples:
+    Examples
+    --------
 
     ** Creat a FeatureLoader to load user features from u.csv.**
 
@@ -1345,12 +1368,14 @@ class EdgeLoader(object):
 
         Src and dst nodes are converted into consecutive integer ID spaces
 
-        Params:
+        Parameters
+        ----------
         node_dicts: dict of dict
             {node_type: {node_str : node_id}}
 
-        Return:
-            dict
+        Return
+        ------
+        dict
             {edge_type: (snids, dnids)}
         """
         results = {}
@@ -1424,7 +1449,8 @@ class EdgeLoader(object):
             (src_type, relation_type, dst_type) should be provided.
             Default: None
 
-        Example:
+        Examples
+        --------
 
         ** Load Edges **
 
@@ -1527,19 +1553,20 @@ class EdgeLoader(object):
             Which row(s) to load. None to load all.
             Default: None
 
-        Example:
+        Examples
+        --------
 
         ** Load Category Relation **
 
         Example data of data.csv is as follows:
 
-        ====    ====    ========
+        ======  ====    ========
         name    rate    movie
-        ====    ====    ========
+        ======  ====    ========
         John    5       StarWar1
         Tim     3.5     X-Man
-        Maggy   4.5     StarWar1
-        ====    ====    ========
+        Maggie  4.5     StarWar1
+        ======  ====    ========
 
         >>> edgeloader = dgl.data.EdgeLoader()
         >>> edgeloader.addCategoryRelationEdge(cols=["name", "rate", "movie"], src_type='user', dst_type='movie')
