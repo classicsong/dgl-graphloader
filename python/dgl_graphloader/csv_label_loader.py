@@ -317,13 +317,13 @@ class NodeLabelLoader(object):
 
         Example data of label.csv is as follows:
 
-        ====    ======
+        ======  ======
         name    label
-        ====    ======
+        ======  ======
         John    Actor,Director
         Tim     Director,Writer
-        Maggy   Actor
-        ====    ======
+        Maggie  Actor
+        ======  ======
 
         >>> label_loader = dgl.data.NodeLabelLoader(input='label.csv',
                                                     separator="\t")
@@ -394,13 +394,13 @@ class NodeLabelLoader(object):
 
         Example data of label.csv is as follows:
 
-        ====    ======
+        ======  ======
         name    label
-        ====    ======
+        ======  ======
         John    Actor,Director
         Tim     Director,Writer
-        Maggy   Actor
-        ====    ======
+        Maggie  Actor
+        ======  ======
 
         >>> label_loader = dgl.data.NodeLabelLoader(input='label.csv',
                                                     separator="\t")
@@ -469,13 +469,13 @@ class NodeLabelLoader(object):
 
         Example data of label.csv is as follows:
 
-        ====    ======
+        ======  ======
         name    label
-        ====    ======
+        ======  ======
         John    Actor,Director
         Tim     Director,Writer
-        Maggy   Actor
-        ====    ======
+        Maggie  Actor
+        ======  ======
 
         >>> label_loader = dgl.data.NodeLabelLoader(input='label.csv',
                                                     separator="\t")
@@ -548,13 +548,13 @@ class NodeLabelLoader(object):
 
         Example data of label.csv is as follows:
 
-        ====    ======
+        ======  ======
         name    label
-        ====    ======
+        ======  ======
         John    Actor,Director
         Tim     Director,Writer
-        Maggy   Actor
-        ====    ======
+        Maggie  Actor
+        ======  ======
 
         >>> label_loader = dgl.data.NodeLabelLoader(input='label.csv',
                                                     separator="\t")
@@ -960,13 +960,13 @@ class EdgeLabelLoader(object):
 
         Example data of label.csv is as follows:
 
-        ====    ========  ====
+        ======  ========  ====
         name    movie     rate
-        ====    ========  ====
+        ======  ========  ====
         John    StarWar1  5.0
         Tim     X-Man     3.5
-        Maggy   StarWar1  4.5
-        ====    ========  ====
+        Maggie  StarWar1  4.5
+        ======  ========  ====
 
         >>> label_loader = dgl.data.EdgeLabelLoader(input='label.csv',
                                                     separator="\t")
@@ -1070,13 +1070,13 @@ class EdgeLabelLoader(object):
 
         Example data of label.csv is as follows:
 
-        ====    ========  ====
+        ======  ========  ====
         name    movie     rate
-        ====    ========  ====
+        ======  ========  ====
         John    StarWar1  5.0
         Tim     X-Man     3.5
-        Maggy   StarWar1  4.5
-        ====    ========  ====
+        Maggie  StarWar1  4.5
+        ======  ========  ====
 
         >>> label_loader = dgl.data.EdgeLabelLoader(input='label.csv',
                                                     separator="\t")
@@ -1180,13 +1180,13 @@ class EdgeLabelLoader(object):
 
         Example data of label.csv is as follows:
 
-        ====    ========  ====
+        ======  ========  ====
         name    movie     rate
-        ====    ========  ====
+        ======  ========  ====
         John    StarWar1  5.0
         Tim     X-Man     3.5
-        Maggy   StarWar1  4.5
-        ====    ========  ====
+        Maggie  StarWar1  4.5
+        ======  ========  ====
 
         >>> label_loader = dgl.data.EdgeLabelLoader(input='label.csv',
                                                     separator="\t")
@@ -1293,13 +1293,13 @@ class EdgeLabelLoader(object):
 
         Example data of label.csv is as follows:
 
-        ====    ========  ====
+        ======  ========  ====
         name    movie     rate
-        ====    ========  ====
+        ======  ========  ====
         John    StarWar1  5.0
         Tim     X-Man     3.5
-        Maggy   StarWar1  4.5
-        ====    ========  ====
+        Maggie  StarWar1  4.5
+        ======  ========  ====
 
         >>> label_loader = dgl.data.EdgeLabelLoader(input='label.csv',
                                                     separator="\t")
