@@ -49,7 +49,8 @@ class NodeLabelLoader(object):
         Whether print debug info during parsing
         Default: False
 
-    Note:
+    Notes
+    -----
 
     * Currently, we only support raw csv file input.
 
@@ -62,7 +63,8 @@ class NodeLabelLoader(object):
     * If eager_mode if False, the labels are not
     processed until building the DGLGraph.
 
-    Examples:
+    Examples
+    --------
 
     ** Creat a FeatureLoader to load user features from u.csv.**
 
@@ -152,14 +154,16 @@ class NodeLabelLoader(object):
         Nodes are converted into consecutive integer ID spaces and
         its corresponding labels are concatenated together.
 
-        Params:
+        Parameters
+        ----------
         node_dicts: dict of dict
             {node_type: {node_str : node_id}}
         label_map: dict of dict
             Label mapping for each node type
 
-        Return:
-            dict
+        Return
+        ------
+        dict
             {node_type: (train_nids, train_labels,
                          valid_nids, valid_labels,
                          test_nids, test_labels)}
@@ -285,6 +289,8 @@ class NodeLabelLoader(object):
         is supported, but a separator is required to split
         the labels.
 
+        Parameters
+        ----------
         cols: list of str or list of int
             Which columns to use. Supported data formats are
 
@@ -311,7 +317,8 @@ class NodeLabelLoader(object):
             Node type. If None, default node type is chosen.
             Default: None
 
-        Examples:
+        Examples
+        --------
 
         ** Load train labels **
 
@@ -331,6 +338,7 @@ class NodeLabelLoader(object):
                                     multilabel=True,
                                     separator=','
                                     rows=np.arange(start=0, stop=100))
+
         """
         if not isinstance(cols, list):
             raise RuntimeError("The cols should be a list of string or int")
@@ -362,6 +370,8 @@ class NodeLabelLoader(object):
         is supported, but a separator is required to split
         the labels.
 
+        Parameters
+        ----------
         cols: list of str or int
             Which columns to use. Supported data formats are
 
@@ -388,7 +398,8 @@ class NodeLabelLoader(object):
             Node type. If None, default node type is chosen.
             Default: None
 
-        Examples:
+        Examples
+        --------
 
         ** Load valid labels **
 
@@ -408,6 +419,7 @@ class NodeLabelLoader(object):
                                     multilabel=True,
                                     separator=','
                                     rows=np.arange(start=100, stop=120))
+
         """
         if not isinstance(cols, list):
             raise RuntimeError("The cols should be a list of string or int")
@@ -437,6 +449,8 @@ class NodeLabelLoader(object):
         is supported, but a separator is required to split
         the labels.
 
+        Parameters
+        ----------
         cols: list of str or int
             Which columns to use. Supported data formats are
 
@@ -463,7 +477,8 @@ class NodeLabelLoader(object):
             Node type. If None, default node type is chosen.
             Default: None
 
-        Examples:
+        Examples
+        --------
 
         ** Load test labels **
 
@@ -483,6 +498,7 @@ class NodeLabelLoader(object):
                                     multilabel=True,
                                     separator=','
                                     rows=np.arange(start=120, stop=130))
+
         """
         if not isinstance(cols, list):
             raise RuntimeError("The cols should be a list of string or int")
@@ -512,6 +528,8 @@ class NodeLabelLoader(object):
         is supported, but a separator is required to split
         the labels.
 
+        Parameters
+        ----------
         cols: list of str or int
             Which columns to use. Supported data formats are
 
@@ -524,7 +542,6 @@ class NodeLabelLoader(object):
 
         split_rate: triple of float
             [train, valid, test]: Random split rate, train + valid + test = 1.0, any of train, valid and test can be 0.0
-
 
         multilabel: bool
             Whether it is a multi-label task.
@@ -542,7 +559,8 @@ class NodeLabelLoader(object):
             Node type. If None, default node type is chosen.
             Default: None
 
-        Examples:
+        Examples
+        --------
 
         ** Load labels **
 
@@ -637,7 +655,8 @@ class EdgeLabelLoader(object):
         Whether print debug info during parsing
         Default: False
 
-    Note:
+    Notes
+    -----
 
     * Currently, we only support raw csv file input.
 
@@ -650,7 +669,8 @@ class EdgeLabelLoader(object):
     * If eager_mode if False, the labels are not
     processed until building the DGLGraph.
 
-    Examples:
+    Examples
+    --------
 
     ** Creat a FeatureLoader to load user features from u.csv.**
 
@@ -792,14 +812,16 @@ class EdgeLabelLoader(object):
         Src nodes and dst nodes are converted into consecutive integer ID spaces and
         its corresponding labels are concatenated together.
 
-        Params:
+        Parameters
+        ----------
         node_dicts: dict of dict
             {node_type: {node_str : node_id}}
         label_map: dict of dict
             Label mapping for each edge type
 
-        Return:
-            dict
+        Return
+        ------
+        dict
             {edge_type: ((train_snids, train_dnids, train_labels,
                           valid_snids, valid_dnids, valid_labels,
                           test_snids, test_dnids, test_labels)}
@@ -1003,7 +1025,8 @@ class EdgeLabelLoader(object):
             Canonical edge type. If None, default edge type is chosen.
             Default: None
 
-        Example
+        Examples
+        --------
 
         ** Load train labels **
 
@@ -1598,7 +1621,8 @@ class EdgeLabelLoader(object):
             Canonical edge type. If None, default edge type is chosen.
             Default: None
 
-        Examples:
+        Examples
+        --------
 
         ** Load labels **
 

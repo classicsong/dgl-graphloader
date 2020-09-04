@@ -65,7 +65,8 @@ class GraphLoader(object):
 
     **For each edge type, there should not exit duplicated edges**
 
-    Example:
+    Examples
+    --------
 
     ** Creat a FeatureLoader to load user features from u.csv.**
 
@@ -137,7 +138,8 @@ class GraphLoader(object):
             edge loaders to load graph edges
             default: None
 
-        Example:
+        Examples
+        --------
 
         ** create edge loader to load edges **
 
@@ -164,7 +166,8 @@ class GraphLoader(object):
             feature loaders to load graph edges
             default: None
 
-        Example:
+        Examples
+        --------
 
         ** Creat a FeatureLoader to load user features from u.csv.**
 
@@ -192,7 +195,8 @@ class GraphLoader(object):
             label loaders to load graph edges
             default: None
 
-        Examples:
+        Examples
+        --------
 
         ** create node label loader to load labels **
 
@@ -725,7 +729,13 @@ class GraphLoader(object):
         self._g = g
 
     def save(self, path):
-        """save the graph and the labels"""
+        """save the graph and the labels
+
+        Parameters
+        ----------
+        path: str
+            Path to save the graph and the labels
+        """
         graph_path = os.path.join(path,
                                   'graph.bin')
         info_path = os.path.join(path,
@@ -735,6 +745,13 @@ class GraphLoader(object):
                               'label_map': self._label_map})
 
     def load(self, path):
+        """load the graph and the labels
+
+        Parameters
+        ----------
+        path: str
+            Path where to load the graph and the labels
+        """
         graph_path = os.path.join(path,
                                   'graph.bin')
         info_path = os.path.join(path,
