@@ -21,23 +21,29 @@ class NodeFeatureLoader(object):
     input: str
         Data source, for the csv file input,
         it should be a string of file path
+
     separator: str, optional
         Delimiter(separator) used in csv file.
-        Default: '\t'
+        Default: `\t`
+
     has_header: bool, optional
         Whether the input data has col name.
         Default: True
+
     int_id: bool, optional
         Whether the raw node id is an int,
         this can help speed things up.
         Default: False
+
     eager_mode: bool, optional
         Whether to use eager parse mode.
         See **Note** for more details.
         Default: False
+
     encoding: str, optional
         Input file encoding
-        Default: 'utf-8'
+        Default: `utf-8`
+
     verbose: bool, optional
         Whether print debug info during parsing.
         Default: False
@@ -45,19 +51,19 @@ class NodeFeatureLoader(object):
     Notes
     -----
 
-    * Currently, we only support raw csv file input.
+    Currently, we only support raw csv file input.
 
-    * Here we assume features created from different columns
+    Here we assume features created from different columns
     are in the same order, thus we can concatenate them directly.
 
-    * If eager_mode is True, the loader will processing
+    If eager_mode is True, the loader will processing
     the features immediately after addXXXFeature
     is called. This will case extra performance overhead
     when merging multiple FeatureLoaders together to
     build the DGLGraph. Currently eager_mode is not
     supported.
 
-    * If eager_mode if False, the features are not
+    If eager_mode if False, the features are not
     processed until building the DGLGraph.
 
     Examples
@@ -171,15 +177,15 @@ class NodeFeatureLoader(object):
         Parameters
         ----------
         cols: list of str or int
-            Which columns to use. Supported data formats are
+            Which columns to use. Supported data formats are:
 
             (1) [str, str, ...] column names for node and category.
-            The first column is treated as node name and
-            the second and the rest columns are treated as category data.
+                The first column is treated as node name and
+                the second and the rest columns are treated as category data.
 
             (2) [int, int, ...] column numbers for node and category.
-            The first column is treated as node name and
-            the second and the rest columns are treated as category data.
+                The first column is treated as node name and
+                the second and the rest columns are treated as category data.
 
         feat_name: str
             Feature name.
@@ -191,17 +197,18 @@ class NodeFeatureLoader(object):
 
         norm: str
             Which kind of normalization is applied to the features.
-            Supported normalization ops are
+            Supported normalization ops are:
 
             (1) None, do nothing.
 
-            (2) `col`, column-based normalization. Normalize the data
-            for each column:
+            (2) `col`, column-based normalization. Normalize the data for each column:
 
             .. math::
                 x_{ij} = \frac{x_{ij}}{\sum_{i=0}^N{x_{ij}}}
 
-            (3) `row`, sane as None
+            (3) `row`, sane as None.
+
+            Default:None
 
         node_type: str
             Node type. If None, default node type is chosen.
@@ -343,12 +350,12 @@ class NodeFeatureLoader(object):
             Which columns to use. Supported data formats are
 
             (1) [str, str] column names for node and category.
-            The first column is treated as node name and
-            the second column is treated as category data.
+                The first column is treated as node name and
+                the second column is treated as category data.
 
             (2) [int, int] column numbers for node and category.
-            The first column is treated as node name and
-            the second is treated as category data.
+                The first column is treated as node name and
+                the second is treated as category data.
 
         feat_name: str
             Feature name.
@@ -367,14 +374,12 @@ class NodeFeatureLoader(object):
 
             (1) None, do nothing.
 
-            (2) `col`, column-based normalization. Normalize the data
-            for each column:
+            (2) `col`, column-based normalization. Normalize the data for each column:
 
             .. math::
                 x_{ij} = \frac{x_{ij}}{\sum_{i=0}^N{x_{ij}}}
 
-            (3) `row`, row-based normalization. Normalize the data for
-            each row:
+            (3) `row`, row-based normalization. Normalize the data for each row:
 
             .. math::
                 x_{ij} = \frac{x_{ij}}{\sum_{j=0}^N{x_{ij}}}
@@ -477,12 +482,12 @@ class NodeFeatureLoader(object):
             Which columns to use. Supported data formats are
 
             (1) [str, str, ...] column names for node and numerical data.
-            The first column is treated as node name and
-            the second and the rest columns are treated as numerical data.
+                The first column is treated as node name and
+                the second and the rest columns are treated as numerical data.
 
             (2) [int, int, ...] column numbers for node and numerical data.
-            The first column is treated as node name and
-            the second and the rest columns are treated as numerical data.
+                The first column is treated as node name and
+                the second and the rest columns are treated as numerical data.
 
         feat_name: str
             Feature name.
@@ -608,12 +613,12 @@ class NodeFeatureLoader(object):
             Which columns to use. Supported data formats are
 
             (1) [str, str] column names for node and category.
-            The first column is treated as node name and
-            the second column is treated as category data.
+                The first column is treated as node name and
+                the second column is treated as category data.
 
             (2) [int, int] column numbers for node and category.
-            The first column is treated as node name and
-            the second is treated as category data.
+                The first column is treated as node name and
+                the second is treated as category data.
 
         separator: str
             Delimiter(separator) used to split category data.
@@ -738,12 +743,12 @@ class NodeFeatureLoader(object):
             Which columns to use. Supported data formats are
 
             (1) [str, str] column names for node and numerical data.
-            The first column is treated as node name and
-            the second column is treated as numerical data.
+                The first column is treated as node name and
+                the second column is treated as numerical data.
 
             (2) [int, int] column numbers for node and numerical data.
-            The first column is treated as node name and
-            the second is treated as numerical data.
+                The first column is treated as node name and
+                the second is treated as numerical data.
 
         feat_name: str
             Feature name.
@@ -770,11 +775,9 @@ class NodeFeatureLoader(object):
 
             (1) None, do nothing.
 
-            (2) `col`, column-based normalization. Normalize the data
-            for each column.
+            (2) `col`, column-based normalization. Normalize the data for each column.
 
-            (3) `raw`, row-based normalization. Normalize the data for
-            each row.
+            (3) `raw`, row-based normalization. Normalize the data for each row.
 
             Default: None
         node_type: str
@@ -899,12 +902,12 @@ class NodeFeatureLoader(object):
             Which columns to use. Supported data formats are
 
             (1) [str, str] column names for node and numerical data.
-            The first column is treated as node name and
-            the second column is treated as string.
+                The first column is treated as node name and
+                the second column is treated as string.
 
             (2) [int, int] column numbers for node and numerical data.
-            The first column is treated as node name and
-            the second column is treated as string.
+                The first column is treated as node name and
+                the second column is treated as string.
 
         languages: list of string
             List of languages used to encode the feature string.
@@ -1165,14 +1168,14 @@ class EdgeFeatureLoader(object):
             Which columns to use. Supported data formats are
 
             (1) [str, str, str] column names for node and numerical data.
-            The first column is treated as source node name,
-            the second column is treated as destination node name and
-            the third column is treated as numerical data.
+                The first column is treated as source node name,
+                the second column is treated as destination node name and
+                the third column is treated as numerical data.
 
             (2) [int, int, int] column numbers for node and numerical data.
-            The first column is treated as source node name,
-            the second column is treated as destination node name and
-            the third column is treated as numerical data.
+                The first column is treated as source node name,
+                the second column is treated as destination node name and
+                the third column is treated as numerical data.
 
         feat_name: str
             Feature name.
@@ -1325,15 +1328,15 @@ class EdgeLoader(object):
     Notes
     -----
 
-    * Currently, we only support raw csv file input.
+    Currently, we only support raw csv file input.
 
-    * If eager_mode is True, the loader will processing
+    If eager_mode is True, the loader will processing
     the edges immediately after addXXXEdges
     is called. This will case extra performance overhead
     when merging multiple edge loaders together to
     build the DGLGraph.
 
-    * If eager_mode if False, the edges are not
+    If eager_mode if False, the edges are not
     processed until building the DGLGraph.
 
     Examples
@@ -1453,12 +1456,12 @@ class EdgeLoader(object):
             Which columns to use. Supported data formats are
 
             (1) [str, str] column names for nodes
-            The first column is treated as source node name,
-            the second column is treated as destination node name.
+                The first column is treated as source node name,
+                the second column is treated as destination node name.
 
             (2) [int, int, int] column numbers nodes.
-            The first column is treated as source node name,
-            the second column is treated as destination node name.
+                The first column is treated as source node name,
+                the second column is treated as destination node name.
 
         rows: numpy.array or list of int
             Which row(s) to load. None to load all.
@@ -1555,14 +1558,14 @@ class EdgeLoader(object):
             Which columns to use. Supported data formats are
 
             (1) [str, str, str] column names for node and categorical data.
-            The first column is treated as source node name,
-            the second column is treated as destination node name and
-            the third column is treated as edge category.
+                The first column is treated as source node name,
+                the second column is treated as destination node name and
+                the third column is treated as edge category.
 
             (2) [int, int, int] column numbers for node and categorical data.
-            The first column is treated as source node name,
-            the second column is treated as destination node name and
-            the third column is treated as edge category.
+                The first column is treated as source node name,
+                the second column is treated as destination node name and
+                the third column is treated as edge category.
 
         src_type: str
             Source node type.

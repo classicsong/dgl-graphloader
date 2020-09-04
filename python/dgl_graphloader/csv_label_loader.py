@@ -52,15 +52,15 @@ class NodeLabelLoader(object):
     Notes
     -----
 
-    * Currently, we only support raw csv file input.
+    Currently, we only support raw csv file input.
 
-    * If eager_mode is True, the loader will processing
+    If eager_mode is True, the loader will processing
     the labels immediately after addXXXSet
     is called. This will case extra performance overhead
     when merging multiple label loaders together to
     build the DGLGraph.
 
-    * If eager_mode if False, the labels are not
+    If eager_mode if False, the labels are not
     processed until building the DGLGraph.
 
     Examples
@@ -295,12 +295,12 @@ class NodeLabelLoader(object):
             Which columns to use. Supported data formats are
 
             (1) [str, str] column names for node and labels.
-            The first column is treated as node name and
-            the second column is treated as label.
+                The first column is treated as node name and
+                the second column is treated as label.
 
             (2) [int, int] column numbers for node and labels.
-            The first column is treated as node name and
-            the second is treated as label.
+                The first column is treated as node name and
+                the second is treated as label.
 
         multilabel: bool
             Whether it is a multi-label task.
@@ -377,12 +377,12 @@ class NodeLabelLoader(object):
             Which columns to use. Supported data formats are
 
             (1) [str, str] column names for node and labels.
-            The first column is treated as node name and
-            the second column is treated as label.
+                The first column is treated as node name and
+                the second column is treated as label.
 
             (2) [int, int] column numbers for node and labels.
-            The first column is treated as node name and
-            the second is treated as label.
+                The first column is treated as node name and
+                the second is treated as label.
 
         multilabel: bool
             Whether it is a multi-label task.
@@ -457,12 +457,12 @@ class NodeLabelLoader(object):
             Which columns to use. Supported data formats are
 
             (1) [str, str] column names for node and labels.
-            The first column is treated as node name and
-            the second column is treated as label.
+                The first column is treated as node name and
+                the second column is treated as label.
 
             (2) [int, int] column numbers for node and labels.
-            The first column is treated as node name and
-            the second is treated as label.
+                The first column is treated as node name and
+                the second is treated as label.
 
         multilabel: bool
             Whether it is a multi-label task.
@@ -537,12 +537,12 @@ class NodeLabelLoader(object):
             Which columns to use. Supported data formats are
 
             (1) [str, str] column names for node and labels.
-            The first column is treated as node name and
-            the second column is treated as label.
+                The first column is treated as node name and
+                the second column is treated as label.
 
             (2) [int, int] column numbers for node and labels.
-            The first column is treated as node name and
-            the second is treated as label.
+                The first column is treated as node name and
+                the second is treated as label.
 
         split_rate: triple of float
             [train, valid, test]: Random split rate, train + valid + test = 1.0, any of train, valid and test can be 0.0
@@ -663,15 +663,15 @@ class EdgeLabelLoader(object):
     Notes
     -----
 
-    * Currently, we only support raw csv file input.
+    Currently, we only support raw csv file input.
 
-    * If eager_mode is True, the loader will processing
+    If eager_mode is True, the loader will processing
     the labels immediately after addXXXSet
     is called. This will case extra performance overhead
     when merging multiple label loaders together to
     build the DGLGraph.
 
-    * If eager_mode if False, the labels are not
+    If eager_mode if False, the labels are not
     processed until building the DGLGraph.
 
     Examples
@@ -1004,19 +1004,21 @@ class EdgeLabelLoader(object):
         cols: list of str or list of int
             Which columns to use. Supported data formats are:
 
-            (1) [str, str] column names for source node, destination node.
+            (1) [str, str] column names for source node,
+                destination node.
 
-            (2) [int, int] column numbers for source node, destination node.
+            (2) [int, int] column numbers for source node,
+                destination node.
 
             (3) [str, str, str] column names for source node, destination node and labels.
-            The first column is treated as source node name,
-            the second column is treated as destination node name and
-            the third column is treated as label.
+                The first column is treated as source node name,
+                the second column is treated as destination node name and
+                the third column is treated as label.
 
             (4) [int, int, int] column numbers for node and labels.
-            The first column is treated as source node name,
-            the second column is treated as destination node name and
-            the third column is treated as label.
+                The first column is treated as source node name,
+                the second column is treated as destination node name and
+                the third column is treated as label.
 
         multilabel: bool
             Whether it is a multi-label task.
@@ -1115,14 +1117,14 @@ class EdgeLabelLoader(object):
             Which columns to use. Supported data formats are:
 
             (1) [str, str, str] column names for source node, destination node and labels.
-            The first column is treated as source node name,
-            the second column is treated as destination node name and
-            the third column is treated as relation type.
+                The first column is treated as source node name,
+                the second column is treated as destination node name and
+                the third column is treated as relation type.
 
             (2) [int, int, int] column numbers for node and labels.
-            The first column is treated as source node name,
-            the second column is treated as destination node name and
-            the third column is treated as relation type.
+                The first column is treated as source node name,
+                the second column is treated as destination node name and
+                the third column is treated as relation type.
 
         src_node_type: str
             Source node type.
@@ -1212,14 +1214,14 @@ class EdgeLabelLoader(object):
             (2) [int, int] column numbers for source node, destination node.
 
             (3) [str, str, str] column names for source node, destination node and labels.
-            The first column is treated as source node name,
-            the second column is treated as destination node name and
-            the third column is treated as label.
+                The first column is treated as source node name,
+                the second column is treated as destination node name and
+                the third column is treated as label.
 
             (4) [int, int, int] column numbers for node and labels.
-            The first column is treated as source node name,
-            the second column is treated as destination node name and
-            the third column is treated as label.
+                The first column is treated as source node name,
+                the second column is treated as destination node name and
+                the third column is treated as label.
 
         multilabel: bool
             Whether it is a multi-label task.
@@ -1317,14 +1319,14 @@ class EdgeLabelLoader(object):
             Which columns to use. Supported data formats are:
 
             (1) [str, str, str] column names for source node, destination node and labels.
-            The first column is treated as source node name,
-            the second column is treated as destination node name and
-            the third column is treated as relation type.
+                The first column is treated as source node name,
+                the second column is treated as destination node name and
+                the third column is treated as relation type.
 
             (2) [int, int, int] column numbers for node and labels.
-            The first column is treated as source node name,
-            the second column is treated as destination node name and
-            the third column is treated as relation type.
+                The first column is treated as source node name,
+                the second column is treated as destination node name and
+                the third column is treated as relation type.
 
         src_node_type: str
             Source node type.
@@ -1414,14 +1416,14 @@ class EdgeLabelLoader(object):
             (2) [int, int] column numbers for source node, destination node.
 
             (3) [str, str, str] column names for source node, destination node and labels.
-            The first column is treated as source node name,
-            the second column is treated as destination node name and
-            the third column is treated as label.
+                The first column is treated as source node name,
+                the second column is treated as destination node name and
+                the third column is treated as label.
 
             (4) [int, int, int] column numbers for node and labels.
-            The first column is treated as source node name,
-            the second column is treated as destination node name and
-            the third column is treated as label.
+                The first column is treated as source node name,
+                the second column is treated as destination node name and
+                the third column is treated as label.
 
         multilabel: bool
             Whether it is a multi-label task.
@@ -1520,14 +1522,14 @@ class EdgeLabelLoader(object):
             Which columns to use. Supported data formats are:
 
             (1) [str, str, str] column names for source node, destination node and labels.
-            The first column is treated as source node name,
-            the second column is treated as destination node name and
-            the third column is treated as relation type.
+                The first column is treated as source node name,
+                the second column is treated as destination node name and
+                the third column is treated as relation type.
 
             (2) [int, int, int] column numbers for node and labels.
-            The first column is treated as source node name,
-            the second column is treated as destination node name and
-            the third column is treated as relation type.
+                The first column is treated as source node name,
+                the second column is treated as destination node name and
+                the third column is treated as relation type.
 
         src_node_type: str
             Source node type.
@@ -1617,14 +1619,14 @@ class EdgeLabelLoader(object):
             (2) [int, int] column numbers for source node, destination node.
 
             (3) [str, str, str] column names for source node, destination node and labels.
-            The first column is treated as source node name,
-            the second column is treated as destination node name and
-            the third column is treated as label.
+                The first column is treated as source node name,
+                the second column is treated as destination node name and
+                the third column is treated as label.
 
             (4) [int, int, int] column numbers for node and labels.
-            The first column is treated as source node name,
-            the second column is treated as destination node name and
-            the third column is treated as label.
+                The first column is treated as source node name,
+                the second column is treated as destination node name and
+                the third column is treated as label.
 
         split_rate: triple of float
             [train, valid, test]: Random split rate, train + valid + test = 1.0,
@@ -1734,14 +1736,14 @@ class EdgeLabelLoader(object):
             Which columns to use. Supported data formats are:
 
             (1) [str, str, str] column names for source node, destination node and labels.
-            The first column is treated as source node name,
-            the second column is treated as destination node name and
-            the third column is treated as relation type.
+                The first column is treated as source node name,
+                the second column is treated as destination node name and
+                the third column is treated as relation type.
 
             (2) [int, int, int] column numbers for node and labels.
-            The first column is treated as source node name,
-            the second column is treated as destination node name and
-            the third column is treated as relation type.
+                The first column is treated as source node name,
+                the second column is treated as destination node name and
+                the third column is treated as relation type.
 
         split_rate: triple of float
             [train, valid, test]: Random split rate, train + valid + test = 1.0,
