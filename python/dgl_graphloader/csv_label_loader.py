@@ -297,6 +297,7 @@ class NodeLabelLoader(object):
             (1) [str, str] column names for node and labels.
             The first column is treated as node name and
             the second column is treated as label.
+
             (2) [int, int] column numbers for node and labels.
             The first column is treated as node name and
             the second is treated as label.
@@ -378,6 +379,7 @@ class NodeLabelLoader(object):
             (1) [str, str] column names for node and labels.
             The first column is treated as node name and
             the second column is treated as label.
+
             (2) [int, int] column numbers for node and labels.
             The first column is treated as node name and
             the second is treated as label.
@@ -457,6 +459,7 @@ class NodeLabelLoader(object):
             (1) [str, str] column names for node and labels.
             The first column is treated as node name and
             the second column is treated as label.
+
             (2) [int, int] column numbers for node and labels.
             The first column is treated as node name and
             the second is treated as label.
@@ -536,6 +539,7 @@ class NodeLabelLoader(object):
             (1) [str, str] column names for node and labels.
             The first column is treated as node name and
             the second column is treated as label.
+
             (2) [int, int] column numbers for node and labels.
             The first column is treated as node name and
             the second is treated as label.
@@ -580,6 +584,7 @@ class NodeLabelLoader(object):
                                 split_rate=[0.7,0.2,0.1],
                                 multilabel=True,
                                 separator=',')
+
         """
         if not isinstance(cols, list):
             raise RuntimeError("The cols should be a list of string or int")
@@ -686,6 +691,7 @@ class EdgeLabelLoader(object):
                                                            stop=100))
 
     ** Append features into graph loader **
+
     >>> graphloader = dgl.data.GraphLoader()
     >>> graphloader.appendFeature(user_loader)
     >>> graphloader.appendLabel(label_loader)
@@ -999,11 +1005,14 @@ class EdgeLabelLoader(object):
             Which columns to use. Supported data formats are:
 
             (1) [str, str] column names for source node, destination node.
+
             (2) [int, int] column numbers for source node, destination node.
+
             (3) [str, str, str] column names for source node, destination node and labels.
             The first column is treated as source node name,
             the second column is treated as destination node name and
             the third column is treated as label.
+
             (4) [int, int, int] column numbers for node and labels.
             The first column is treated as source node name,
             the second column is treated as destination node name and
@@ -1044,6 +1053,7 @@ class EdgeLabelLoader(object):
                                                     separator="\t")
         >>> label_loader.addTrainSet(['name', 'movie', 'rate'],
                                     rows=np.arange(start=0, stop=100))
+
         """
 
         if not isinstance(cols, list):
@@ -1104,11 +1114,12 @@ class EdgeLabelLoader(object):
         cols: list of str or list of int
             Which columns to use. Supported data formats are:
 
-            (3) [str, str, str] column names for source node, destination node and labels.
+            (1) [str, str, str] column names for source node, destination node and labels.
             The first column is treated as source node name,
             the second column is treated as destination node name and
             the third column is treated as relation type.
-            (4) [int, int, int] column numbers for node and labels.
+
+            (2) [int, int, int] column numbers for node and labels.
             The first column is treated as source node name,
             the second column is treated as destination node name and
             the third column is treated as relation type.
@@ -1150,6 +1161,7 @@ class EdgeLabelLoader(object):
                                                 src_node_type='name',
                                                 dst_node_type='movie',
                                                 rows=np.arange(start=0, stop=100))
+
         """
         if not isinstance(cols, list):
             raise RuntimeError("The cols should be a list of string or int")
@@ -1196,11 +1208,14 @@ class EdgeLabelLoader(object):
             Which columns to use. Supported data formats are:
 
             (1) [str, str] column names for source node, destination node.
+
             (2) [int, int] column numbers for source node, destination node.
+
             (3) [str, str, str] column names for source node, destination node and labels.
             The first column is treated as source node name,
             the second column is treated as destination node name and
             the third column is treated as label.
+
             (4) [int, int, int] column numbers for node and labels.
             The first column is treated as source node name,
             the second column is treated as destination node name and
@@ -1301,11 +1316,12 @@ class EdgeLabelLoader(object):
         cols: list of str or list of int
             Which columns to use. Supported data formats are:
 
-            (3) [str, str, str] column names for source node, destination node and labels.
+            (1) [str, str, str] column names for source node, destination node and labels.
             The first column is treated as source node name,
             the second column is treated as destination node name and
             the third column is treated as relation type.
-            (4) [int, int, int] column numbers for node and labels.
+
+            (2) [int, int, int] column numbers for node and labels.
             The first column is treated as source node name,
             the second column is treated as destination node name and
             the third column is treated as relation type.
@@ -1347,6 +1363,7 @@ class EdgeLabelLoader(object):
                                                 src_node_type='name',
                                                 dst_node_type='movie',
                                                 rows=np.arange(start=0, stop=100))
+
         """
         if not isinstance(cols, list):
             raise RuntimeError("The cols should be a list of string or int")
@@ -1393,11 +1410,14 @@ class EdgeLabelLoader(object):
             Which columns to use. Supported data formats are:
 
             (1) [str, str] column names for source node, destination node.
+
             (2) [int, int] column numbers for source node, destination node.
+
             (3) [str, str, str] column names for source node, destination node and labels.
             The first column is treated as source node name,
             the second column is treated as destination node name and
             the third column is treated as label.
+
             (4) [int, int, int] column numbers for node and labels.
             The first column is treated as source node name,
             the second column is treated as destination node name and
@@ -1438,6 +1458,7 @@ class EdgeLabelLoader(object):
                                                     separator="\t")
         >>> label_loader.addTestSet(['name', 'movie', 'rate'],
                                     rows=np.arange(start=0, stop=100))
+
         """
         if not isinstance(cols, list):
             raise RuntimeError("The cols should be a list of string or int")
@@ -1498,11 +1519,12 @@ class EdgeLabelLoader(object):
         cols: list of str or list of int
             Which columns to use. Supported data formats are:
 
-            (3) [str, str, str] column names for source node, destination node and labels.
+            (1) [str, str, str] column names for source node, destination node and labels.
             The first column is treated as source node name,
             the second column is treated as destination node name and
             the third column is treated as relation type.
-            (4) [int, int, int] column numbers for node and labels.
+
+            (2) [int, int, int] column numbers for node and labels.
             The first column is treated as source node name,
             the second column is treated as destination node name and
             the third column is treated as relation type.
@@ -1591,11 +1613,14 @@ class EdgeLabelLoader(object):
             Which columns to use. Supported data formats are:
 
             (1) [str, str] column names for source node, destination node.
+
             (2) [int, int] column numbers for source node, destination node.
+
             (3) [str, str, str] column names for source node, destination node and labels.
             The first column is treated as source node name,
             the second column is treated as destination node name and
             the third column is treated as label.
+
             (4) [int, int, int] column numbers for node and labels.
             The first column is treated as source node name,
             the second column is treated as destination node name and
@@ -1708,11 +1733,12 @@ class EdgeLabelLoader(object):
         cols: list of str or list of int
             Which columns to use. Supported data formats are:
 
-            (3) [str, str, str] column names for source node, destination node and labels.
+            (1) [str, str, str] column names for source node, destination node and labels.
             The first column is treated as source node name,
             the second column is treated as destination node name and
             the third column is treated as relation type.
-            (4) [int, int, int] column numbers for node and labels.
+
+            (2) [int, int, int] column numbers for node and labels.
             The first column is treated as source node name,
             the second column is treated as destination node name and
             the third column is treated as relation type.

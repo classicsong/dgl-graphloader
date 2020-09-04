@@ -176,6 +176,7 @@ class NodeFeatureLoader(object):
             (1) [str, str, ...] column names for node and category.
             The first column is treated as node name and
             the second and the rest columns are treated as category data.
+
             (2) [int, int, ...] column numbers for node and category.
             The first column is treated as node name and
             the second and the rest columns are treated as category data.
@@ -193,6 +194,7 @@ class NodeFeatureLoader(object):
             Supported normalization ops are
 
             (1) None, do nothing.
+
             (2) `col`, column-based normalization. Normalize the data
             for each column:
 
@@ -217,6 +219,7 @@ class NodeFeatureLoader(object):
         ** Load category features for single category column **
 
         Example data of u.csv is as follows:
+
             ======  ======
             name    gender
             ======  ======
@@ -342,6 +345,7 @@ class NodeFeatureLoader(object):
             (1) [str, str] column names for node and category.
             The first column is treated as node name and
             the second column is treated as category data.
+
             (2) [int, int] column numbers for node and category.
             The first column is treated as node name and
             the second is treated as category data.
@@ -362,6 +366,7 @@ class NodeFeatureLoader(object):
             Supported normalization ops are
 
             (1) None, do nothing.
+
             (2) `col`, column-based normalization. Normalize the data
             for each column:
 
@@ -474,6 +479,7 @@ class NodeFeatureLoader(object):
             (1) [str, str, ...] column names for node and numerical data.
             The first column is treated as node name and
             the second and the rest columns are treated as numerical data.
+
             (2) [int, int, ...] column numbers for node and numerical data.
             The first column is treated as node name and
             the second and the rest columns are treated as numerical data.
@@ -491,6 +497,7 @@ class NodeFeatureLoader(object):
             Supported normalization ops are
 
             (1) None, do nothing.
+
             (2) `standard`:
 
             .. math::
@@ -603,6 +610,7 @@ class NodeFeatureLoader(object):
             (1) [str, str] column names for node and category.
             The first column is treated as node name and
             the second column is treated as category data.
+
             (2) [int, int] column numbers for node and category.
             The first column is treated as node name and
             the second is treated as category data.
@@ -623,6 +631,7 @@ class NodeFeatureLoader(object):
             Supported normalization ops are
 
             (1) None, do nothing.
+
             (2) `standard`:
 
             .. math::
@@ -731,6 +740,7 @@ class NodeFeatureLoader(object):
             (1) [str, str] column names for node and numerical data.
             The first column is treated as node name and
             the second column is treated as numerical data.
+
             (2) [int, int] column numbers for node and numerical data.
             The first column is treated as node name and
             the second is treated as numerical data.
@@ -759,10 +769,13 @@ class NodeFeatureLoader(object):
             Supported normalization ops are
 
             (1) None, do nothing.
+
             (2) `col`, column-based normalization. Normalize the data
             for each column.
+
             (3) `raw`, row-based normalization. Normalize the data for
             each row.
+
             Default: None
         node_type: str
             Node type. If None, default node type is chosen.
@@ -888,6 +901,7 @@ class NodeFeatureLoader(object):
             (1) [str, str] column names for node and numerical data.
             The first column is treated as node name and
             the second column is treated as string.
+
             (2) [int, int] column numbers for node and numerical data.
             The first column is treated as node name and
             the second column is treated as string.
@@ -911,30 +925,30 @@ class NodeFeatureLoader(object):
             Node type. If None, default node type is chosen.
             Default: None
 
-        Notes:
+        Notes
         ------
         The language model support is backed by scapy
 
-        Example:
+        Examples
         --------
 
         ** Load words to vector features **
 
         Example data of u.csv is as follows:
 
-        ======  ===
+        ======  ================================================================================
         name    title
-        ======  ===
+        ======  ================================================================================
         Paper1  'Modeling Relational Data with Graph Convolutional Networks'
         Paper2  'Convolutional neural networks on graphs with fast localized spectral filtering'
         Paper3  'Translating embeddings for modeling multi-relational data'
-        ======  ===
+        ======  ================================================================================
 
         >>> user_loader = dgl.data.FeatureLoader(input='paper.csv',
                                                     separator="|",
                                                     has_head=True)
-        >>> user_loader.addNumericalBucketFeature(cols=["name", "title"],
-                                                language=['en_lang'],
+        >>> user_loader.addWord2VecFeature(cols=["name", "title"],
+                                                language=['en_core_web_lg'],
 
         """
         if not isinstance(cols, list):
@@ -1037,6 +1051,7 @@ class EdgeFeatureLoader(object):
     is called. This will case extra performance overhead
     when merging multiple FeatureLoaders together to
     build the DGLGraph.
+
     If eager_mode if False, the features are not
     processed until building the DGLGraph.
 
@@ -1049,7 +1064,8 @@ class EdgeFeatureLoader(object):
                                                    separator="|")
     >>> edge_loader.addNumericalFeature(cols=["src", "dst", rate"])
 
-        ** Append features into graph loader **
+    ** Append features into graph loader **
+
     >>> graphloader = dgl.data.GraphLoader()
     >>> graphloader.appendFeature(edge_loader)
 
@@ -1152,6 +1168,7 @@ class EdgeFeatureLoader(object):
             The first column is treated as source node name,
             the second column is treated as destination node name and
             the third column is treated as numerical data.
+
             (2) [int, int, int] column numbers for node and numerical data.
             The first column is treated as source node name,
             the second column is treated as destination node name and
@@ -1170,6 +1187,7 @@ class EdgeFeatureLoader(object):
             Supported normalization ops are
 
             (1) None, do nothing.
+
             (2) `standard`:
 
             .. math::
@@ -1341,6 +1359,7 @@ class EdgeLoader(object):
     >>> edge_loader.addEdges([0, 1])
 
     ** Append features into graph loader **
+
     >>> graphloader = dgl.data.GraphLoader()
     >>> graphloader.appendEdge(edge_loader)
     >>> graphloader.appendFeature(user_loader)
@@ -1436,6 +1455,7 @@ class EdgeLoader(object):
             (1) [str, str] column names for nodes
             The first column is treated as source node name,
             the second column is treated as destination node name.
+
             (2) [int, int, int] column numbers nodes.
             The first column is treated as source node name,
             the second column is treated as destination node name.
@@ -1538,6 +1558,7 @@ class EdgeLoader(object):
             The first column is treated as source node name,
             the second column is treated as destination node name and
             the third column is treated as edge category.
+
             (2) [int, int, int] column numbers for node and categorical data.
             The first column is treated as source node name,
             the second column is treated as destination node name and
