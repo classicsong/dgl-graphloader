@@ -32,7 +32,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         'scikit-learn>=0.23.2',
-        'scapy>=2.4.3',
+        'spacy>=2.3.0,<3.0.0',
         'dgl>=0.5.0'
     ],
     url='https://github.com/classicsong/dgl-graphloader.git',

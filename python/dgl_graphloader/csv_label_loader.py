@@ -524,7 +524,7 @@ class NodeLabelLoader(object):
         self._labels.append((node_type, nodes, labels, (0., 0., 1.)))
 
     def addSet(self, cols, split_rate, multilabel=False, separator=None, rows=None, node_type=None):
-        r"""Add Test Set.
+        r"""Add Train/Valid/Test Set.
 
         Two columns of the **input** are chosen, one for
         node name and another for label string. Multi-label

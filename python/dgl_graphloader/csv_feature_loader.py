@@ -472,8 +472,8 @@ class NodeFeatureLoader(object):
     def addNumericalFeature(self, cols, feat_name='nf', rows=None, norm=None, node_type=None):
         r"""Add numerical features for nodes
 
-        Two columns of the **input** are chosen, one for
-        node name and another for numbers. The numbers are
+        Two or more columns of the **input** are chosen, one for
+        node name and the others for numbers. The numbers are
         treated as floats.
 
         Parameters
