@@ -454,13 +454,13 @@ class GraphLoader(object):
                 # has edge features
                 if vals[2] is not None:
                     for key, feat in vals[2].items():
-                        g.edges[edge_type].data[key] = th.tensor(feat)
+                        g.edges[edge_type].data[key] = th.tensor(feat, dtype=th.float)
         else:
             g = dgl.graph((graphs[None][0], graphs[None][1]), num_nodes=nodes[None])
             # has edge features
             if graphs[None][2] is not None:
                 for key, feat in graphs[None][2].items():
-                    g.edata[key] = th.tensor(feat)
+                    g.edata[key] = th.tensor(feat, dtype=th.float)
 
         # no need to handle edge features
         # handle node features
@@ -469,10 +469,10 @@ class GraphLoader(object):
             for node_type, vals in node_feats.items():
                 if node_type is None:
                     for key, feat in vals.items():
-                        g.ndata[key] = th.tensor(feat[1])
+                        g.ndata[key] = th.tensor(feat[1], dtype=th.float)
                 else:
                     for key, feat in vals.items():
-                        g.nodes[node_type].data[key] = th.tensor(feat[1])
+                        g.nodes[node_type].data[key] = th.tensor(feat[1], dtype=th.float)
 
         if self._verbose:
             print('Done building dgl graph.')
@@ -708,6 +708,19 @@ class GraphLoader(object):
             test_mask = th.full((g.num_nodes(node_type),), False, dtype=th.bool)
             test_mask[test_nids] = True
 
+            # check for single label or multi label task
+            num_labels = th.sum(labels)
+            if num_labels == labels.shape[0]:
+                # single label
+                if self._verbose:
+                    print('Single Label')
+                _, labels = labels.max(dim=1)
+                self._is_multilabel = False
+            else:
+                if self._verbose:
+                    print('Multi Label')
+                self._is_multilabel = True
+
             # add label and train/valid/test masks into g
             if node_type is None:
                 assert len(train_node_labels) == 1, \
@@ -727,6 +740,12 @@ class GraphLoader(object):
             print('Done processing labels')
 
         self._g = g
+        self.cleanup()
+
+    def cleanup(self):
+        self._edge_loader = None
+        self._feature_loader = None
+        self._label_loader = None
 
     def save(self, path):
         """save the graph and the labels
@@ -742,7 +761,8 @@ class GraphLoader(object):
                                  'info.pkl')
         save_graphs(graph_path, self._g)
         save_info(info_path, {'node_id_map': self._node_dict,
-                              'label_map': self._label_map})
+                              'label_map': self._label_map,
+                              'is_multilabel': self._is_multilabel})
 
     def load(self, path):
         """load the graph and the labels
@@ -761,6 +781,7 @@ class GraphLoader(object):
         info = load_info(str(info_path))
         self._node_dict = info['node_id_map']
         self._label_map = info['label_map']
+        self._is_multilabel = info['is_multilabel']
 
     @property
     def node2id(self):
@@ -785,7 +806,6 @@ class GraphLoader(object):
         return {node_type : {val:key for key, val in node_maps.items()} \
             for node_type, node_maps in self._node_dict.items()}
 
-
     @property
     def label_map(self):
         """ Return mapping from internal label id to original label
@@ -802,3 +822,9 @@ class GraphLoader(object):
         """ Return processed graph
         """
         return self._g
+
+    @property
+    def is_multilabel(self):
+        """ Return whether label is multilabel or singlelebel
+        """
+        return self._is_multilabel

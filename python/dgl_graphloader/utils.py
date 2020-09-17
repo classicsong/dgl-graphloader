@@ -393,7 +393,7 @@ def parse_numerical_feat(numerical_inputs, norm=None):
     array([[0.25, 0., 0.],[0.5, 0.33333333, 0.25],[0.25, 0.66666667, -0.75]])
 
     """
-    feat = np.array(numerical_inputs, dtype='float')
+    feat = np.array(numerical_inputs, dtype=np.float32)
 
     if norm == 'standard':
         return float_col_l1_normalize(feat)

@@ -60,3 +60,4 @@ if __name__ == '__main__':
     dataset = SSpmDataset(raw_dir='./social-spammer/')
     g = dataset.g
     print(g)
+    print(g.nodes['user'].data['nf'].dtype)
