@@ -602,7 +602,7 @@ class NodeLabelLoader(object):
         if split_rate[0] < 0 or split_rate[1] < 0 or split_rate[2] < 0:
             raise RuntimeError("Split rates must >= 0.")
         if split_rate[0] + split_rate[1] + split_rate[2] != 1.:
-            warnings.warn("The sum of split rates should be 1.")
+            warnings.warn("The sum of split rates should be 1.", category=RuntimeWarning)
 
         nodes, labels = self._load_labels(cols, multilabel, separator, rows)
         assert len(nodes) == len(labels), \
@@ -1695,7 +1695,7 @@ class EdgeLabelLoader(object):
         if split_rate[0] < 0 or split_rate[1] < 0 or split_rate[2] < 0:
             raise RuntimeError("Split rates must >= 0.")
         if split_rate[0] + split_rate[1] + split_rate[2] != 1.:
-            warnings.warn("The sum of split rates should be 1.")
+            warnings.warn("The sum of split rates should be 1.", category=RuntimeWarning)
 
         src_nodes, dst_nodes, labels = \
             self._load_labels(cols, multilabel, separator, rows)
@@ -1808,7 +1808,7 @@ class EdgeLabelLoader(object):
         if split_rate[0] < 0 or split_rate[1] < 0 or split_rate[2] < 0:
             raise RuntimeError("Split rates must >= 0.")
         if split_rate[0] + split_rate[1] + split_rate[2] != 1.:
-            warnings.warn("The sum of split rates should be 1.")
+            warnings.warn("The sum of split rates should be 1.", category=RuntimeWarning)
 
         # TODO(xiangsx) add label/multilabel support in the future
         rel_edges = self._load_relation_labels(cols, rows)
