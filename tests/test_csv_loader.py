@@ -1586,7 +1586,7 @@ def test_build_graph():
         assert th.nonzero(g.edges[('a', 'follow', 'b')].data['train_mask']).shape[0] == 2
         assert th.nonzero(g.edges[('a', 'follow', 'b')].data['valid_mask']).shape[0] == 1
         assert th.nonzero(g.edges[('a', 'follow', 'b')].data['test_mask']).shape[0] == 1
-        assert np.array_equal(g.edges[('a', 'follow', 'b')].data['ef'].numpy(),
+        assert np.allclose(g.edges[('a', 'follow', 'b')].data['ef'].numpy(),
             np.array([[0.1],[0.2],[0.3],[0.4],[0.5],[0.6],[0.7],[0.8],[0.9]]))
 
         # heterogeneous graph loader (edge no labels)
@@ -1686,7 +1686,7 @@ def test_build_graph():
                       [0,1,1,1,0,0,0,1,0],[1,0,0,0,0,0,1,0,1],
                       [1,0,1,0,0,1,0,0,0],[0,1,0,0,1,1,1,0,0],
                       [1,0,1,0,0,1,0,0,0],[1,0,0,0,1,1,1,0,0]]))
-        assert np.array_equal(g.edges[('a', 'in', 'aa')].data['ef'].numpy(),
+        assert np.allclose(g.edges[('a', 'in', 'aa')].data['ef'].numpy(),
             np.array([[0.1],[0.2],[0.3],[0.4],[0.5],[0.6],[0.7],[0.8],[0.9]]))
 
 def test_add_reverse_edge():
