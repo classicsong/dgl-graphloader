@@ -758,6 +758,12 @@ def test_node_label_loader():
         assert l_3[3] == (0., 0., 1.)
         assert l_4[3] == (0.5, 0.25, 0.25)
 
+        # check warning
+        label_loader.addSet(['node','label2'],
+                            [0.51, 0.25, 0.25],
+                            multilabel=True,
+                            separator=',', rows=[0,1,2,3], node_type='nt')
+
 def test_edge_label_loader():
     import tempfile
     with tempfile.TemporaryDirectory() as tmpdirname:
@@ -841,6 +847,14 @@ def test_edge_label_loader():
         assert l_2[4] == (0., 1., 0.)
         assert l_3[4] == (0., 0., 1.)
         assert l_4[4] == (0.5, 0.25, 0.25)
+
+        # check warning
+        label_loader.addSet(['node_0','node_1','label2'],
+                            [0.5, 0.25, 0.26],
+                            multilabel=True,
+                            separator=',',
+                            rows=[0,1,2,3],
+                            edge_type=('src_n','rel_r','dst_n'))
 
 def test_edge_loader():
     import tempfile
@@ -1371,6 +1385,9 @@ def test_relation_edge_label_process():
         assert valid_labels is None
         assert test_labels is None
 
+        #test warning
+        label_loader.addRelationalSet([0,1,3], split_rate=[0.01,0.4,0.6])
+
 def test_edge_process():
     import tempfile
     with tempfile.TemporaryDirectory() as tmpdirname:
@@ -1586,7 +1603,7 @@ def test_build_graph():
         assert th.nonzero(g.edges[('a', 'follow', 'b')].data['train_mask']).shape[0] == 2
         assert th.nonzero(g.edges[('a', 'follow', 'b')].data['valid_mask']).shape[0] == 1
         assert th.nonzero(g.edges[('a', 'follow', 'b')].data['test_mask']).shape[0] == 1
-        assert np.array_equal(g.edges[('a', 'follow', 'b')].data['ef'].numpy(),
+        assert np.allclose(g.edges[('a', 'follow', 'b')].data['ef'].numpy(),
             np.array([[0.1],[0.2],[0.3],[0.4],[0.5],[0.6],[0.7],[0.8],[0.9]]))
 
         # heterogeneous graph loader (edge no labels)
@@ -1686,7 +1703,7 @@ def test_build_graph():
                       [0,1,1,1,0,0,0,1,0],[1,0,0,0,0,0,1,0,1],
                       [1,0,1,0,0,1,0,0,0],[0,1,0,0,1,1,1,0,0],
                       [1,0,1,0,0,1,0,0,0],[1,0,0,0,1,1,1,0,0]]))
-        assert np.array_equal(g.edges[('a', 'in', 'aa')].data['ef'].numpy(),
+        assert np.allclose(g.edges[('a', 'in', 'aa')].data['ef'].numpy(),
             np.array([[0.1],[0.2],[0.3],[0.4],[0.5],[0.6],[0.7],[0.8],[0.9]]))
 
 def test_add_reverse_edge():
@@ -1842,7 +1859,7 @@ if __name__ == '__main__':
     # test Feature Loader
     test_node_category_feature_loader()
     test_node_numerical_feature_loader()
-    #test_node_word2vec_feature_loader()
+    test_node_word2vec_feature_loader()
     test_edge_numerical_feature_loader()
     # test Label Loader
     test_node_label_loader()
