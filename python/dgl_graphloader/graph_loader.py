@@ -617,9 +617,19 @@ class GraphLoader(object):
 
                 if self._add_reverse:
                     reverse_edge_type = _gen_reverse_etype(edge_type)
+                    zero_train_mask = th.full(train_mask.shape, False, dtype=th.bool)
+                    zero_valid_mask = th.full(valid_mask.shape, False, dtype=th.bool)
+                    zero_test_mask = th.full(test_mask.shape, False, dtype=th.bool)
+                    g.edges[edge_type].data['rev_train_mask'] = zero_train_mask
+                    g.edges[edge_type].data['rev_valid_mask'] = zero_valid_mask
+                    g.edges[edge_type].data['rev_test_mask'] = zero_test_mask
                     g.edges[reverse_edge_type].data['rev_train_mask'] = train_mask
                     g.edges[reverse_edge_type].data['rev_valid_mask'] = valid_mask
                     g.edges[reverse_edge_type].data['rev_test_mask'] = test_mask
+                    g.edges[reverse_edge_type].data['train_mask'] = zero_train_mask
+                    g.edges[reverse_edge_type].data['valid_mask'] = zero_valid_mask
+                    g.edges[reverse_edge_type].data['test_mask'] = zero_test_mask
+
 
         # node labels
         train_node_labels = {}
