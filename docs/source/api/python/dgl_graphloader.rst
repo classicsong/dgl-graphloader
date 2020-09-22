@@ -30,7 +30,7 @@ Label loader
     :members: addTrainSet, addValidSet, addTestSet, addSet
 
 .. autoclass:: EdgeLabelLoader
-    :members: addTrainSet, addValidSet, addTestSet, addSet
+    :members: addTrainSet, addValidSet, addTestSet, addSet, addRelationalTrainSet, addRelationalValidSet, addRelationalTestSet, addRelationalSet
 
 DGL Graph loader
 ---------------------------
