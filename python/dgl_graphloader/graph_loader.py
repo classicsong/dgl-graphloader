@@ -128,6 +128,7 @@ class GraphLoader(object):
         self._verbose = verbose
         self._node_dict = {}
         self._label_map = None
+        self._is_multilabel = False
 
     def appendEdge(self, edge_loader):
         """ Add edges into graph
